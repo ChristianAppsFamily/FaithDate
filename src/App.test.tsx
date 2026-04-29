@@ -18,5 +18,6 @@ describe('FaithDate app shell', () => {
 
     expect(screen.getByText(/Grace, 27/i)).toBeInTheDocument();
     expect(screen.getByText(/Bible study host/i)).toBeInTheDocument();
+    expect(screen.getByText(/Grace shares 7 of your top values/i)).toBeInTheDocument();
   });
 });

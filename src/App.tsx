@@ -27,6 +27,7 @@ const matches = [
     faith: 'Worship leader',
     score: '96%',
     gradient: 'linear-gradient(150deg, #fbe2d1 0%, #d96e88 100%)',
+    quote: 'I am praying for a relationship rooted in patience, honesty, and joyful service.',
   },
   {
     name: 'Grace',
@@ -35,6 +36,7 @@ const matches = [
     faith: 'Bible study host',
     score: '91%',
     gradient: 'linear-gradient(150deg, #f9d7e7 0%, #9566b8 100%)',
+    quote: 'I love building community around Scripture, laughter, and shared Sunday rhythms.',
   },
   {
     name: 'Naomi',
@@ -43,6 +45,7 @@ const matches = [
     faith: 'Mission volunteer',
     score: '89%',
     gradient: 'linear-gradient(150deg, #fee5b6 0%, #ce7a5a 100%)',
+    quote: 'Serving others keeps my heart grounded, and I hope to share that calling.',
   },
 ];
 
@@ -171,10 +174,10 @@ function MessagesPreview() {
   );
 }
 
-function ProfileDetail() {
+function ProfileDetail({ match }: { match: Match }) {
   return (
     <section className="phone-screen profile-detail" aria-label="Profile detail preview">
-      <div className="detail-hero">
+      <div className="detail-hero" style={{ background: match.gradient }}>
         <button className="icon-button light" aria-label="Back to discovery">
           <Home size={18} />
         </button>
@@ -185,7 +188,7 @@ function ProfileDetail() {
       </div>
       <div className="detail-body">
         <p className="eyebrow">Compatibility</p>
-        <h2>Sophia shares 7 of your top values</h2>
+        <h2>{match.name} shares 7 of your top values</h2>
         <div className="compatibility">
           <span>
             <Star size={16} fill="currentColor" />
@@ -200,9 +203,7 @@ function ProfileDetail() {
             Service
           </span>
         </div>
-        <blockquote>
-          "I am praying for a relationship rooted in patience, honesty, and joyful service."
-        </blockquote>
+        <blockquote>"{match.quote}"</blockquote>
       </div>
     </section>
   );
@@ -282,7 +283,7 @@ function App() {
 
       <section className="content-grid">
         <FaithPreferences />
-        <ProfileDetail />
+        <ProfileDetail match={activeMatch} />
         <MessagesPreview />
       </section>
     </main>
