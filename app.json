@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "FaithDate",
+    "slug": "faithdate",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "faithdate",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.christianappsfamily.faithdate"
+    },
+    "android": {
+      "package": "com.christianappsfamily.faithdate",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFF7EE"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
