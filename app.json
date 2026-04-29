@@ -8,6 +8,22 @@
     "scheme": "faithdate",
     "icon": "./assets/icon.png",
     "assetBundlePatterns": ["**/*"],
+    "plugins": [
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "FaithDate uses your device identifier to deliver personalized ads and measure ad performance."
+        }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "delayAppMeasurementInit": true
+        }
+      ]
+    ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -19,7 +35,8 @@
       "buildNumber": "1",
       "infoPlist": {
         "CFBundleDisplayName": "FaithDate",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSUserTrackingUsageDescription": "FaithDate uses your device identifier to deliver personalized ads and measure ad performance."
       }
     },
     "android": {
@@ -32,6 +49,15 @@
     "web": {
       "bundler": "metro",
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "privacyPolicyUrl": "https://christianappsfamily.github.io/FaithDate/privacy-policy/",
+      "removeAdsProductId": "faithdate_remove_ads_lifetime",
+      "removeAdsPrice": "$9.99",
+      "adMob": {
+        "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+        "androidAppId": "ca-app-pub-3940256099942544~3347511713"
+      }
     }
   }
 }

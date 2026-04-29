@@ -1,7 +1,10 @@
 import { Feather, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
+  Alert,
+  Linking,
+  Platform,
   Pressable,
   ScrollView,
   StatusBar,
@@ -10,6 +13,12 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import {
+  initializeMonetization,
+  purchaseRemoveAdsProduct,
+  requestAdsTrackingPermission,
+  type RemoveAdsProduct,
+} from './monetization';
 
 const matches = [
   {
@@ -55,6 +64,10 @@ const messages = [
     time: '1h',
   },
 ];
+
+const REMOVE_ADS_PRODUCT_ID = 'faithdate_remove_ads_lifetime';
+const PRIVACY_POLICY_URL = 'https://christianappsfamily.github.io/FaithDate/privacy-policy/';
+const FALLBACK_REMOVE_ADS_PRICE = '$9.99';
 
 type Match = (typeof matches)[number];
 
@@ -209,6 +222,136 @@ function ValuePill({ icon, label }: { icon: keyof typeof MaterialCommunityIcons.
   );
 }
 
+function SettingsPanel() {
+  const [removeAdsProduct, setRemoveAdsProduct] = useState<RemoveAdsProduct | null>(null);
+  const [isStoreReady, setIsStoreReady] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [trackingStatus, setTrackingStatus] = useState('Not requested');
+
+  const removeAdsPrice = removeAdsProduct?.displayPrice ?? FALLBACK_REMOVE_ADS_PRICE;
+
+  const showMessage = useCallback((title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      console.info(`${title}: ${message}`);
+      return;
+    }
+
+    Alert.alert(title, message);
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function initializeAdsAndStore() {
+      try {
+        const removeAds = await initializeMonetization(REMOVE_ADS_PRODUCT_ID);
+
+        if (isMounted) {
+          setRemoveAdsProduct(removeAds);
+          setIsStoreReady(true);
+        }
+      } catch (error) {
+        console.warn('Unable to initialize monetization SDKs yet.', error);
+        if (isMounted) {
+          setIsStoreReady(false);
+        }
+      }
+    }
+
+    initializeAdsAndStore();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const requestTrackingPermission = useCallback(async () => {
+    try {
+      const status = await requestAdsTrackingPermission();
+      setTrackingStatus(status);
+    } catch (error) {
+      console.warn('Unable to request ATT permission.', error);
+      showMessage('Tracking permission', 'Unable to request tracking permission on this device.');
+    }
+  }, [showMessage]);
+
+  const openPrivacyPolicy = useCallback(async () => {
+    const canOpen = await Linking.canOpenURL(PRIVACY_POLICY_URL);
+
+    if (canOpen) {
+      await Linking.openURL(PRIVACY_POLICY_URL);
+      return;
+    }
+
+    showMessage('Privacy Policy', PRIVACY_POLICY_URL);
+  }, [showMessage]);
+
+  const purchaseRemoveAds = useCallback(async () => {
+    setIsPurchasing(true);
+
+    try {
+      await purchaseRemoveAdsProduct(REMOVE_ADS_PRODUCT_ID);
+      showMessage('Remove Ads', 'Your lifetime ad removal purchase is being processed.');
+    } catch (error) {
+      console.warn('Remove ads purchase was not completed.', error);
+      showMessage('Remove Ads', 'Purchase was not completed. Please try again from a device signed into the App Store.');
+    } finally {
+      setIsPurchasing(false);
+    }
+  }, [showMessage]);
+
+  return (
+    <View style={styles.settingsPanel}>
+      <View style={styles.settingsHeader}>
+        <Text style={styles.settingsEyebrow}>Settings</Text>
+        <Text style={styles.settingsTitle}>Privacy, ads, and purchases</Text>
+        <Text style={styles.settingsBody}>
+          FaithDate is configured for ATT, AdMob, and a one-time StoreKit purchase that removes ads permanently.
+        </Text>
+      </View>
+
+      <View style={styles.removeAdsCard}>
+        <View style={styles.removeAdsRow}>
+          <View style={styles.removeAdsIcon}>
+            <MaterialCommunityIcons name="advertisements-off" size={24} color="#e84f71" />
+          </View>
+          <View style={styles.flexOne}>
+            <Text style={styles.removeAdsTitle}>Remove ads forever</Text>
+            <Text style={styles.removeAdsPrice}>{removeAdsPrice} one-time</Text>
+          </View>
+        </View>
+
+        <Pressable
+          accessibilityLabel="Remove ads for $9.99 one-time"
+          disabled={isPurchasing}
+          onPress={purchaseRemoveAds}
+          style={[styles.purchaseButton, isPurchasing && styles.disabledButton]}
+        >
+          <Text style={styles.purchaseButtonText}>
+            {isPurchasing ? 'Opening StoreKit...' : `Remove Ads - ${removeAdsPrice}`}
+          </Text>
+        </Pressable>
+
+        <Text style={styles.settingsNote}>
+          Product ID: {REMOVE_ADS_PRODUCT_ID}. Status: {isStoreReady ? 'Store connected' : 'Configure in App Store Connect'}.
+        </Text>
+      </View>
+
+      <View style={styles.settingsActionRow}>
+        <Pressable style={styles.settingsSecondaryButton} onPress={requestTrackingPermission}>
+          <Text style={styles.settingsSecondaryText}>Request tracking permission</Text>
+        </Pressable>
+        <Text style={styles.settingsNote}>ATT status: {trackingStatus}</Text>
+      </View>
+
+      <Pressable style={styles.privacyButton} onPress={openPrivacyPolicy}>
+        <Text style={styles.privacyButtonText}>Privacy Policy</Text>
+        <Text style={styles.privacyUrl}>{PRIVACY_POLICY_URL}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 function AppContent() {
   const [matchIndex, setMatchIndex] = useState(0);
   const activeMatch = matches[matchIndex];
@@ -273,6 +416,7 @@ function AppContent() {
         <FaithPreferences />
         <ProfileDetail match={activeMatch} />
         <MessagesPreview />
+        <SettingsPanel />
       </ScrollView>
     </SafeAreaView>
   );
@@ -751,6 +895,112 @@ const styles = StyleSheet.create({
   messageText: {
     color: '#8e7169',
     lineHeight: 21,
+  },
+  settingsPanel: {
+    gap: 18,
+    padding: 22,
+    backgroundColor: '#30201a',
+    borderRadius: 30,
+  },
+  settingsHeader: {
+    gap: 10,
+  },
+  settingsEyebrow: {
+    color: '#ffd6c8',
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  settingsTitle: {
+    color: '#fff',
+    fontFamily: 'Georgia',
+    fontSize: 30,
+    fontWeight: '800',
+    lineHeight: 32,
+  },
+  settingsBody: {
+    color: 'rgba(255,255,255,0.78)',
+    lineHeight: 23,
+  },
+  removeAdsCard: {
+    gap: 14,
+    padding: 18,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(255,255,255,0.16)',
+    borderWidth: 1,
+    borderRadius: 24,
+  },
+  removeAdsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  removeAdsIcon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 48,
+    height: 48,
+    backgroundColor: '#fff0e6',
+    borderRadius: 18,
+  },
+  removeAdsTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  removeAdsPrice: {
+    marginTop: 4,
+    color: '#ffd6c8',
+    fontWeight: '800',
+  },
+  purchaseButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+    backgroundColor: '#ff6f86',
+    borderRadius: 999,
+  },
+  disabledButton: {
+    opacity: 0.7,
+  },
+  purchaseButtonText: {
+    color: '#fff',
+    fontWeight: '900',
+  },
+  settingsActionRow: {
+    gap: 10,
+  },
+  settingsSecondaryButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
+    borderColor: 'rgba(255,255,255,0.22)',
+    borderWidth: 1,
+    borderRadius: 999,
+  },
+  settingsSecondaryText: {
+    color: '#fff',
+    fontWeight: '900',
+  },
+  privacyButton: {
+    gap: 4,
+    padding: 16,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 20,
+  },
+  privacyButtonText: {
+    color: '#fff',
+    fontWeight: '900',
+  },
+  privacyUrl: {
+    color: '#ffd6c8',
+    fontSize: 12,
+  },
+  settingsNote: {
+    color: 'rgba(255,255,255,0.66)',
+    fontSize: 12,
+    lineHeight: 18,
   },
 });
 
