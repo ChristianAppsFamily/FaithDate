@@ -74,6 +74,9 @@ function MatchCard({ match, onNext }: { match: Match; onNext: () => void }) {
           <Sparkles size={16} />
           {match.score} aligned
         </div>
+        <button className="top-action" aria-label="Next match" onClick={onNext}>
+          <Search size={20} />
+        </button>
         <div className="profile-silhouette" />
       </div>
 
@@ -98,7 +101,7 @@ function MatchCard({ match, onNext }: { match: Match; onNext: () => void }) {
           <span>Wants family</span>
         </div>
         <div className="actions">
-          <button className="round-button secondary" aria-label="Next match" onClick={onNext}>
+          <button className="round-button secondary" aria-label="Browse matches">
             <Search size={22} />
           </button>
           <button className="round-button primary" aria-label="Like profile">

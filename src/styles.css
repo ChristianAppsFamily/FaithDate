@@ -262,6 +262,21 @@ main {
   min-height: 245px;
 }
 
+.top-action {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  color: var(--brown);
+  background: rgb(255 255 255 / 88%);
+  border-radius: 18px;
+  box-shadow: 0 12px 24px rgb(58 37 31 / 18%);
+}
+
 .top-badge {
   position: absolute;
   top: 18px;
