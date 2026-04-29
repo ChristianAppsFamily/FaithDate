@@ -1,5 +1,5 @@
 module.exports = {
-  preset: '@react-native/jest-preset',
+  preset: 'jest-expo',
   testEnvironment: 'jsdom',
   setupFiles: ['./jest.setup.cjs'],
   transformIgnorePatterns: [
