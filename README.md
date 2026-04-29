@@ -25,6 +25,14 @@ npm run android
 npm run web
 ```
 
+Open the generated iOS project in Xcode:
+
+```sh
+open ios/FaithDate.xcodeproj
+```
+
+See `IOS_SUBMISSION.md` for iOS signing, archive, and App Store submission notes.
+
 Run checks:
 
 ```sh
