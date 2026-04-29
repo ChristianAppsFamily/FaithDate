@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const matches = [
   {
@@ -209,7 +209,7 @@ function ValuePill({ icon, label }: { icon: keyof typeof MaterialCommunityIcons.
   );
 }
 
-function App() {
+function AppContent() {
   const [matchIndex, setMatchIndex] = useState(0);
   const activeMatch = matches[matchIndex];
 
@@ -275,6 +275,14 @@ function App() {
         <MessagesPreview />
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function App() {
+  return (
+    <SafeAreaProvider>
+      <AppContent />
+    </SafeAreaProvider>
   );
 }
 

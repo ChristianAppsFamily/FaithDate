@@ -20,5 +20,6 @@ jest.mock('expo-linear-gradient', () => ({
 }));
 
 jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaProvider: ({ children }) => React.createElement(React.Fragment, null, children),
   SafeAreaView: ({ children, style }) => React.createElement(View, { style }, children),
 }));
