@@ -463,7 +463,6 @@ main {
 
 .profile-detail {
   min-height: auto;
-  overflow: hidden;
 }
 
 .detail-hero {
@@ -486,6 +485,7 @@ main {
 }
 
 .detail-body h2 {
+  display: block;
   margin: 0 0 18px;
   font-size: 2rem;
   letter-spacing: -0.04em;

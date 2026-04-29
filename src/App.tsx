@@ -179,7 +179,7 @@ function MessagesPreview() {
 
 function ProfileDetail({ match }: { match: Match }) {
   return (
-    <section className="phone-screen profile-detail" aria-label="Profile detail preview">
+    <section className="profile-detail" aria-label="Profile detail preview">
       <div className="detail-hero" style={{ background: match.gradient }}>
         <button className="icon-button light" aria-label="Back to discovery">
           <Home size={18} />
