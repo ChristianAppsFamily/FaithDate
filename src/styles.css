@@ -221,7 +221,7 @@ main {
 
 .phone-screen {
   position: relative;
-  min-height: 720px;
+  min-height: 780px;
   overflow: hidden;
   background: var(--cream);
   border-radius: 36px;
@@ -259,7 +259,7 @@ main {
 
 .photo-panel {
   position: relative;
-  min-height: 270px;
+  min-height: 245px;
 }
 
 .top-badge {
@@ -300,8 +300,8 @@ main {
 
 .match-content {
   display: grid;
-  gap: 16px;
-  padding: 22px;
+  gap: 13px;
+  padding: 18px 20px 20px;
 }
 
 .match-content h2 {
@@ -319,7 +319,8 @@ main {
 .bio {
   margin: 0;
   color: #6f5148;
-  line-height: 1.55;
+  font-size: 0.95rem;
+  line-height: 1.45;
 }
 
 .tags,
@@ -347,9 +348,9 @@ main {
 .round-button {
   display: grid;
   place-items: center;
-  width: 60px;
-  height: 60px;
-  border-radius: 22px;
+  width: 56px;
+  height: 56px;
+  border-radius: 20px;
 }
 
 .round-button.secondary {
@@ -358,8 +359,8 @@ main {
 }
 
 .round-button.primary {
-  width: 70px;
-  height: 70px;
+  width: 64px;
+  height: 64px;
   color: white;
   background: linear-gradient(135deg, var(--rose), #ff9e70);
 }
