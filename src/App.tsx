@@ -14,9 +14,12 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import {
+  initializeInterstitialAds,
   initializeMonetization,
   purchaseRemoveAdsProduct,
+  purchaseSubscription,
   requestAdsTrackingPermission,
+  showInterstitialAd,
   type RemoveAdsProduct,
 } from './monetization';
 
@@ -66,8 +69,13 @@ const messages = [
 ];
 
 const REMOVE_ADS_PRODUCT_ID = 'faithdate_remove_ads_lifetime';
+const PREMIUM_MONTHLY_ID = 'faithdate_premium_monthly';
+const PREMIUM_YEARLY_ID = 'faithdate_premium_yearly';
 const PRIVACY_POLICY_URL = 'https://christianappsfamily.github.io/FaithDate/privacy-policy/';
+const PROMOTE_PROFILE_URL = 'https://FaithDate.net';
 const FALLBACK_REMOVE_ADS_PRICE = '$9.99';
+const FALLBACK_MONTHLY_PRICE = '$4.99';
+const FALLBACK_YEARLY_PRICE = '$39.99';
 
 type Match = (typeof matches)[number];
 
@@ -286,6 +294,17 @@ function SettingsPanel() {
     showMessage('Privacy Policy', PRIVACY_POLICY_URL);
   }, [showMessage]);
 
+  const openPromoteProfile = useCallback(async () => {
+    const canOpen = await Linking.canOpenURL(PROMOTE_PROFILE_URL);
+
+    if (canOpen) {
+      await Linking.openURL(PROMOTE_PROFILE_URL);
+      return;
+    }
+
+    showMessage('Promote Profile', PROMOTE_PROFILE_URL);
+  }, [showMessage]);
+
   const purchaseRemoveAds = useCallback(async () => {
     setIsPurchasing(true);
 
@@ -300,13 +319,41 @@ function SettingsPanel() {
     }
   }, [showMessage]);
 
+  const purchaseMonthly = useCallback(async () => {
+    setIsPurchasing(true);
+
+    try {
+      await purchaseSubscription(PREMIUM_MONTHLY_ID);
+      showMessage('Premium Monthly', 'Your premium monthly subscription is being processed.');
+    } catch (error) {
+      console.warn('Monthly subscription was not completed.', error);
+      showMessage('Premium Monthly', 'Purchase was not completed. Please try again from a device signed into the App Store.');
+    } finally {
+      setIsPurchasing(false);
+    }
+  }, [showMessage]);
+
+  const purchaseYearly = useCallback(async () => {
+    setIsPurchasing(true);
+
+    try {
+      await purchaseSubscription(PREMIUM_YEARLY_ID);
+      showMessage('Premium Yearly', 'Your premium yearly subscription is being processed.');
+    } catch (error) {
+      console.warn('Yearly subscription was not completed.', error);
+      showMessage('Premium Yearly', 'Purchase was not completed. Please try again from a device signed into the App Store.');
+    } finally {
+      setIsPurchasing(false);
+    }
+  }, [showMessage]);
+
   return (
     <View style={styles.settingsPanel}>
       <View style={styles.settingsHeader}>
         <Text style={styles.settingsEyebrow}>Settings</Text>
         <Text style={styles.settingsTitle}>Privacy, ads, and purchases</Text>
         <Text style={styles.settingsBody}>
-          FaithDate is configured for ATT, AdMob, and a one-time StoreKit purchase that removes ads permanently.
+          FaithDate is configured for ATT, AdMob, and StoreKit purchases that remove ads permanently or unlock premium features.
         </Text>
       </View>
 
@@ -337,6 +384,68 @@ function SettingsPanel() {
         </Text>
       </View>
 
+      <View style={styles.subscriptionCard}>
+        <View style={styles.removeAdsRow}>
+          <View style={[styles.removeAdsIcon, { backgroundColor: '#e8f5e9' }]}>
+            <MaterialCommunityIcons name="crown" size={24} color="#4caf50" />
+          </View>
+          <View style={styles.flexOne}>
+            <Text style={styles.removeAdsTitle}>Go Premium</Text>
+            <Text style={styles.removeAdsPrice}>Unlock all features</Text>
+          </View>
+        </View>
+
+        <Pressable
+          accessibilityLabel="Premium Monthly $4.99"
+          disabled={isPurchasing}
+          onPress={purchaseMonthly}
+          style={[styles.purchaseButton, { backgroundColor: '#4caf50' }, isPurchasing && styles.disabledButton]}
+        >
+          <Text style={styles.purchaseButtonText}>
+            {isPurchasing ? 'Opening StoreKit...' : `Premium Monthly - ${FALLBACK_MONTHLY_PRICE}`}
+          </Text>
+        </Pressable>
+
+        <Pressable
+          accessibilityLabel="Premium Yearly $39.99"
+          disabled={isPurchasing}
+          onPress={purchaseYearly}
+          style={[styles.purchaseButton, { backgroundColor: '#2196f3', marginTop: 8 }, isPurchasing && styles.disabledButton]}
+        >
+          <Text style={styles.purchaseButtonText}>
+            {isPurchasing ? 'Opening StoreKit...' : `Premium Yearly - ${FALLBACK_YEARLY_PRICE}`}
+          </Text>
+        </Pressable>
+
+        <Text style={styles.settingsNote}>
+          Premium includes unlimited likes, advanced filters, read receipts, and priority support.
+        </Text>
+      </View>
+
+      <View style={styles.promoteCard}>
+        <View style={styles.removeAdsRow}>
+          <View style={[styles.removeAdsIcon, { backgroundColor: '#fff3e0' }]}>
+            <MaterialCommunityIcons name="bullhorn" size={24} color="#ff9800" />
+          </View>
+          <View style={styles.flexOne}>
+            <Text style={styles.removeAdsTitle}>Promote My Profile</Text>
+            <Text style={styles.removeAdsPrice}>Get seen by more matches</Text>
+          </View>
+        </View>
+
+        <Pressable
+          accessibilityLabel="Promote my profile on FaithDate.net"
+          onPress={openPromoteProfile}
+          style={[styles.purchaseButton, { backgroundColor: '#ff9800' }]}
+        >
+          <Text style={styles.purchaseButtonText}>Promote Profile</Text>
+        </Pressable>
+
+        <Text style={styles.settingsNote}>
+          Visit FaithDate.net to purchase profile promotion and advertising space.
+        </Text>
+      </View>
+
       <View style={styles.settingsActionRow}>
         <Pressable style={styles.settingsSecondaryButton} onPress={requestTrackingPermission}>
           <Text style={styles.settingsSecondaryText}>Request tracking permission</Text>
@@ -356,8 +465,17 @@ function AppContent() {
   const [matchIndex, setMatchIndex] = useState(0);
   const activeMatch = matches[matchIndex];
 
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      void initializeInterstitialAds();
+    }
+  }, []);
+
   function showNextMatch() {
     setMatchIndex((currentIndex) => (currentIndex + 1) % matches.length);
+    if (Platform.OS !== 'web') {
+      void showInterstitialAd();
+    }
   }
 
   return (
@@ -924,6 +1042,22 @@ const styles = StyleSheet.create({
     lineHeight: 23,
   },
   removeAdsCard: {
+    gap: 14,
+    padding: 18,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(255,255,255,0.16)',
+    borderWidth: 1,
+    borderRadius: 24,
+  },
+  subscriptionCard: {
+    gap: 14,
+    padding: 18,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(255,255,255,0.16)',
+    borderWidth: 1,
+    borderRadius: 24,
+  },
+  promoteCard: {
     gap: 14,
     padding: 18,
     backgroundColor: 'rgba(255,255,255,0.08)',

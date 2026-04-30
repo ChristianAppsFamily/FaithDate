@@ -1,0 +1,86 @@
+{
+  "identifier": "FaithDateStoreKitConfiguration",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "9.99",
+      "familyShareable": false,
+      "internalID": "faithdate-remove-ads",
+      "localizations": [
+        {
+          "description": "Remove all ads from FaithDate permanently.",
+          "displayName": "Remove Ads",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "faithdate_remove_ads_lifetime",
+      "referenceName": "FaithDate Remove Ads",
+      "type": "NonConsumable"
+    }
+  ],
+  "settings": {
+    "_applicationInternalID": "faithdate-ios",
+    "_askToBuyEnabled": false,
+    "_billingGracePeriodEnabled": false,
+    "_failTransactionsEnabled": false,
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_storeKitErrors": [],
+    "_timeRate": 1
+  },
+  "subscriptionGroups": [
+    {
+      "id": " faithdate_premium_group",
+      "localizations": [],
+      "name": "FaithDate Premium",
+      "subscriptions": [
+        {
+          "adCampaign": null,
+          "codeOffers": [],
+          "displayPrice": "4.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "faithdate-premium-monthly",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Unlock all premium features including unlimited likes, advanced filters, and read receipts.",
+              "displayName": "Premium Monthly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "faithdate_premium_monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "FaithDate Premium Monthly",
+          "subscriptionGroupID": " faithdate_premium_group",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adCampaign": null,
+          "codeOffers": [],
+          "displayPrice": "39.99",
+          "familyShareable": false,
+          "groupNumber": 2,
+          "internalID": "faithdate-premium-yearly",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Unlock all premium features for a full year at a discounted rate.",
+              "displayName": "Premium Yearly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "faithdate_premium_yearly",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "FaithDate Premium Yearly",
+          "subscriptionGroupID": " faithdate_premium_group",
+          "type": "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 4,
+    "minor": 0
+  }
+}
