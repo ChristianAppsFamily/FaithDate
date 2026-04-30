@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "FaithDate",
+    "slug": "faithdate",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "faithdate",
+    "icon": "./assets/icon.png",
+    "assetBundlePatterns": ["**/*"],
+    "plugins": [
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "FaithDate uses your device identifier to deliver personalized ads and measure ad performance."
+        }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "delayAppMeasurementInit": true
+        }
+      ]
+    ],
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFF7EE"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.christianappsfamily.faithdate",
+      "buildNumber": "1",
+      "infoPlist": {
+        "CFBundleDisplayName": "FaithDate",
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSUserTrackingUsageDescription": "FaithDate uses your device identifier to deliver personalized ads and measure ad performance."
+      }
+    },
+    "android": {
+      "package": "com.christianappsfamily.faithdate",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFF7EE"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "privacyPolicyUrl": "https://christianappsfamily.github.io/FaithDate/privacy-policy/",
+      "removeAdsProductId": "faithdate_remove_ads_lifetime",
+      "removeAdsPrice": "$9.99",
+      "adMob": {
+        "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+        "androidAppId": "ca-app-pub-3940256099942544~3347511713"
+      }
+    }
+  }
+}
