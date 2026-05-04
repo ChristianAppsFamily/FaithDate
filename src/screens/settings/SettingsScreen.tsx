@@ -25,7 +25,7 @@ import {
 type NavigationProp = NativeStackNavigationProp<SettingsStackParamList, 'SettingsMain'>;
 
 const REMOVE_ADS_PRODUCT_ID = 'faithdate_remove_ads_lifetime';
-const FALLBACK_REMOVE_ADS_PRICE = '$4.99';
+const FALLBACK_REMOVE_ADS_PRICE = '$9.99';
 
 interface SettingsRowProps {
   icon: keyof typeof Feather.glyphMap;
