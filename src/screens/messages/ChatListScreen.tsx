@@ -6,6 +6,7 @@ import {
   Pressable,
   ScrollView,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -58,6 +59,10 @@ const CHATS = [
 export default function ChatListScreen() {
   const navigation = useNavigation<NavigationProp>();
 
+  const handleNewMessage = () => {
+    Alert.alert('New Message', 'Start a new conversation feature coming soon!');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.secondary} />
@@ -65,7 +70,7 @@ export default function ChatListScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Messages</Text>
-        <Pressable style={styles.newMessageButton}>
+        <Pressable style={styles.newMessageButton} onPress={handleNewMessage}>
           <Feather name="edit" size={20} color="#fff" />
         </Pressable>
       </View>

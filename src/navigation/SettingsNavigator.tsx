@@ -8,6 +8,7 @@ import ChangePasswordScreen from '../screens/settings/ChangePasswordScreen';
 import FeedbackSupportScreen from '../screens/settings/FeedbackSupportScreen';
 import ContactSupportScreen from '../screens/settings/ContactSupportScreen';
 import RateReviewScreen from '../screens/settings/RateReviewScreen';
+import PrivacyPolicyScreen from '../screens/settings/PrivacyPolicyScreen';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -20,6 +21,7 @@ export default function SettingsNavigator() {
       <Stack.Screen name="FeedbackSupport" component={FeedbackSupportScreen} />
       <Stack.Screen name="ContactSupport" component={ContactSupportScreen} />
       <Stack.Screen name="RateReview" component={RateReviewScreen} />
+      <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
     </Stack.Navigator>
   );
 }

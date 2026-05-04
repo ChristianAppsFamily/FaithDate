@@ -7,6 +7,8 @@ import {
   ScrollView,
   StatusBar,
   Switch,
+  Alert,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather, Ionicons } from '@expo/vector-icons';
@@ -23,7 +25,7 @@ import {
 type NavigationProp = NativeStackNavigationProp<SettingsStackParamList, 'SettingsMain'>;
 
 const REMOVE_ADS_PRODUCT_ID = 'faithdate_remove_ads_lifetime';
-const FALLBACK_REMOVE_ADS_PRICE = '$9.99';
+const FALLBACK_REMOVE_ADS_PRICE = '$4.99';
 
 interface SettingsRowProps {
   icon: keyof typeof Feather.glyphMap;
@@ -95,9 +97,13 @@ export default function SettingsScreen() {
         }
       } catch (error) {
         console.warn('Unable to initialize monetization SDKs yet.', error);
+        if (isMounted) {
+          setIsStoreReady(false);
+        }
       }
     }
 
+    // Initialize asynchronously without blocking UI
     initializeAdsAndStore();
 
     return () => {
@@ -125,6 +131,22 @@ export default function SettingsScreen() {
     navigation.getParent()?.navigate('Landing');
   };
 
+  const handleMenuPress = () => {
+    Alert.alert('Menu', 'Additional options coming soon!');
+  };
+
+  const handleHelpCenter = () => {
+    Alert.alert('Help Center', 'FAQs and guides coming soon!');
+  };
+
+  const handlePrivacyPolicy = () => {
+    Linking.openURL('https://faithdate.com/privacy');
+  };
+
+  const handleTermsOfService = () => {
+    Linking.openURL('https://faithdate.com/terms');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.secondary} />
@@ -132,7 +154,7 @@ export default function SettingsScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Settings</Text>
-        <Pressable style={styles.menuButton}>
+        <Pressable style={styles.menuButton} onPress={handleMenuPress}>
           <Feather name="menu" size={20} color="#fff" />
         </Pressable>
       </View>
@@ -262,7 +284,7 @@ export default function SettingsScreen() {
           <SettingsRow
             icon="help-circle"
             label="Help Center"
-            onPress={() => {}}
+            onPress={handleHelpCenter}
           />
         </View>
 
@@ -272,12 +294,12 @@ export default function SettingsScreen() {
           <SettingsRow
             icon="file-text"
             label="Privacy Policy"
-            onPress={() => {}}
+            onPress={handlePrivacyPolicy}
           />
           <SettingsRow
             icon="file"
             label="Terms of Service"
-            onPress={() => {}}
+            onPress={handleTermsOfService}
           />
           <View style={styles.versionRow}>
             <Text style={styles.versionLabel}>Version</Text>

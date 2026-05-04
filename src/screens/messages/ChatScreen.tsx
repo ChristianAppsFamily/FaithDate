@@ -10,6 +10,7 @@ import {
   Switch,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -80,6 +81,10 @@ export default function ChatScreen() {
     setInputText(suggestion);
   };
 
+  const handleMoreOptions = () => {
+    Alert.alert('Chat Options', 'Block user, Report, or View Profile');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.secondary} />
@@ -96,7 +101,7 @@ export default function ChatScreen() {
             <Text style={styles.onlineText}>Active Now</Text>
           </View>
         </View>
-        <Pressable style={styles.moreButton}>
+        <Pressable style={styles.moreButton} onPress={handleMoreOptions}>
           <Feather name="more-vertical" size={20} color="#fff" />
         </Pressable>
       </View>

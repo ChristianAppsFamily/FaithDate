@@ -7,10 +7,16 @@ import {
   ScrollView,
   StatusBar,
   TextInput,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather, Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { MainTabParamList } from '../../types';
 import { COLORS } from '../../constants';
+
+type NavigationProp = NativeStackNavigationProp<MainTabParamList>;
 
 const CATEGORIES = ['All', 'Profiles', 'Reels', 'Voice-over', 'Saved'];
 
@@ -45,8 +51,29 @@ const PROFILES = [
 ];
 
 export default function HomeScreen() {
+  const navigation = useNavigation<NavigationProp>();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleNotificationsPress = () => {
+    navigation.navigate('Notifications');
+  };
+
+  const handleMenuPress = () => {
+    navigation.navigate('Profile');
+  };
+
+  const handleSaveProfile = (profileId: string) => {
+    Alert.alert('Profile Saved', 'This profile has been saved to your favorites.');
+  };
+
+  const handleLikeProfile = (profileId: string) => {
+    Alert.alert('Profile Liked', 'You liked this profile! They will be notified.');
+  };
+
+  const handleReadMore = (profileName: string) => {
+    Alert.alert('Profile Details', `View full profile for ${profileName}`);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -61,11 +88,11 @@ export default function HomeScreen() {
           <Text style={styles.headerTitle}>FaithDate</Text>
         </View>
         <View style={styles.headerActions}>
-          <Pressable style={styles.iconButton}>
+          <Pressable style={styles.iconButton} onPress={handleNotificationsPress}>
             <Feather name="bell" size={20} color="#fff" />
             <View style={styles.notificationDot} />
           </Pressable>
-          <Pressable style={styles.iconButton}>
+          <Pressable style={styles.iconButton} onPress={handleMenuPress}>
             <Feather name="menu" size={20} color="#fff" />
           </Pressable>
         </View>
@@ -127,7 +154,7 @@ export default function HomeScreen() {
                     </View>
                   </View>
                 </View>
-                <Pressable style={styles.moreButton}>
+                <Pressable style={styles.moreButton} onPress={() => handleReadMore(profile.name)}>
                   <Feather name="more-vertical" size={20} color={COLORS.textSecondary} />
                 </Pressable>
               </View>
@@ -147,17 +174,17 @@ export default function HomeScreen() {
                 <Text style={styles.bioText} numberOfLines={2}>
                   {profile.bio}
                 </Text>
-                <Pressable>
+                <Pressable onPress={() => handleReadMore(profile.name)}>
                   <Text style={styles.readMore}>Read More...</Text>
                 </Pressable>
               </View>
 
               {/* Action Buttons */}
               <View style={styles.actionRow}>
-                <Pressable style={styles.saveButton}>
+                <Pressable style={styles.saveButton} onPress={() => handleSaveProfile(profile.id)}>
                   <Text style={styles.saveButtonText}>Save</Text>
                 </Pressable>
-                <Pressable style={styles.likeButton}>
+                <Pressable style={styles.likeButton} onPress={() => handleLikeProfile(profile.id)}>
                   <Text style={styles.likeButtonText}>Like</Text>
                 </Pressable>
               </View>
