@@ -6,10 +6,16 @@ import {
   Pressable,
   ScrollView,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { MainTabParamList } from '../../types';
 import { COLORS } from '../../constants';
+
+type NavigationProp = NativeStackNavigationProp<MainTabParamList>;
 
 const NOTIFICATIONS = [
   {
@@ -90,6 +96,20 @@ const getIconColorForType = (type: string) => {
 };
 
 export default function NotificationsScreen() {
+  const navigation = useNavigation<NavigationProp>();
+
+  const handleMarkAllRead = () => {
+    Alert.alert('Success', 'All notifications marked as read');
+  };
+
+  const handleViewProfile = (userName: string) => {
+    Alert.alert('View Profile', `Navigate to ${userName}'s profile`);
+  };
+
+  const handleOpenMessenger = (userName: string) => {
+    navigation.navigate('Messages');
+  };
+
   const groupedNotifications = NOTIFICATIONS.reduce((acc, notification) => {
     if (!acc[notification.date]) {
       acc[notification.date] = [];
@@ -105,7 +125,7 @@ export default function NotificationsScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Notifications</Text>
-        <Pressable style={styles.markAllButton}>
+        <Pressable style={styles.markAllButton} onPress={handleMarkAllRead}>
           <Text style={styles.markAllText}>Mark all as read</Text>
         </Pressable>
       </View>
@@ -145,12 +165,12 @@ export default function NotificationsScreen() {
                 </View>
 
                 {!notification.read && notification.type === 'like' && (
-                  <Pressable style={styles.actionButton}>
+                  <Pressable style={styles.actionButton} onPress={() => handleViewProfile(notification.title.replace(' liked your profile', '').replace('You have a new like from ', ''))}>
                     <Text style={styles.actionButtonText}>View Profile</Text>
                   </Pressable>
                 )}
                 {!notification.read && notification.type === 'message' && (
-                  <Pressable style={styles.textButton}>
+                  <Pressable style={styles.textButton} onPress={() => handleOpenMessenger(notification.title.replace('New message from ', ''))}>
                     <Text style={styles.textButtonText}>Open Messenger!</Text>
                   </Pressable>
                 )}

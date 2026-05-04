@@ -32,6 +32,7 @@ export type SettingsStackParamList = {
   FeedbackSupport: undefined;
   ContactSupport: undefined;
   RateReview: undefined;
+  PrivacyPolicy: undefined;
 };
 
 export type MessageStackParamList = {
