@@ -17,3 +17,5 @@ export { TabHeader } from './TabHeader';
 export type { TabHeaderProps } from './TabHeader';
 export { Text } from './Text';
 export type { TextProps } from './Text';
+export { TextField } from './TextField';
+export type { TextFieldProps } from './TextField';

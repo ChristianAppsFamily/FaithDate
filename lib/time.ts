@@ -1,3 +1,13 @@
+/** Age in whole years from an ISO birthdate (YYYY-MM-DD). */
+export function ageFromBirthdate(birthdate: string, at: Date = new Date()): number {
+  const b = new Date(birthdate);
+  if (Number.isNaN(b.getTime())) return 0;
+  let age = at.getFullYear() - b.getFullYear();
+  const m = at.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && at.getDate() < b.getDate())) age -= 1;
+  return age;
+}
+
 /** "0:42" style clock for clip durations and call timers. */
 export function formatClock(totalSeconds: number): string {
   const s = Math.max(0, Math.floor(totalSeconds));

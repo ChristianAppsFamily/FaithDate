@@ -26,6 +26,10 @@ npm run lint        # expo lint
 npm test            # jest: mock adapter rules
 ```
 
+## Onboarding
+
+Tap **Create your profile** on the welcome screen to walk all 10 steps (basics, faith, life stage, intent, verify, photos, voice intro, story, preferences). Progress saves as you go — quit and reopen to resume. The voice intro uses the real microphone through expo-audio (30–90 seconds, skip allowed). Photos in Phase 1 are abstract placeholders; the adapter only stores a count until real uploads land with Supabase.
+
 ## Try the demo account
 
 On the welcome screen tap **I already have an account** to sign in as **Grace** (29, Atlanta, verified, seeking a spouse). Her account is pre-seeded with:

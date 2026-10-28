@@ -1,38 +1,60 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
 
-import { Button, Card, Text } from '@/components/ui';
-import { onboardingCopy, onboardingSteps } from '@/config/onboarding';
-import { rules } from '@/config/rules';
-import { adapter } from '@/data';
+import { Screen, Text } from '@/components/ui';
+import { useTheme } from '@/theme';
 
-import { StepFrame } from './StepFrame';
+import { BasicsStep } from './steps/BasicsStep';
+import { FaithStep } from './steps/FaithStep';
+import { IntentStep } from './steps/IntentStep';
+import { LifeStageStep } from './steps/LifeStageStep';
+import { PhotosStep } from './steps/PhotosStep';
+import { PreferencesStep } from './steps/PreferencesStep';
+import { StoryStep } from './steps/StoryStep';
+import { VerifyStep } from './steps/VerifyStep';
+import { VoiceIntroStep } from './steps/VoiceIntroStep';
+import { useOnboardingDraft } from './useOnboardingDraft';
 
-/**
- * Steps 2 to 10. Milestone 1 ships the frame, progress, save-and-resume, and navigation;
- * each step's form lands in Milestone 2.
- */
+/** Steps 2 to 10. Each step owns its form; this routes by step id and handles the draft load. */
 export function StepScreen() {
-  const { n } = useLocalSearchParams<{ n: string }>();
-  const router = useRouter();
-  const step = Math.min(rules.onboarding.totalSteps, Math.max(2, Number(n) || 2));
-  const def = onboardingSteps.find((s) => s.number === step)!;
+  const ctrl = useOnboardingDraft();
+  const { colors, spacing } = useTheme();
 
-  const continueNext = async () => {
-    await adapter.saveOnboardingStep(def.id, { completed_step: step });
-    if (step >= rules.onboarding.totalSteps) router.replace('/(onboarding)/finish');
-    else router.replace({ pathname: '/(onboarding)/step/[n]', params: { n: String(step + 1) } });
-  };
+  if (ctrl.loading || !ctrl.draft) {
+    return (
+      <Screen>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: spacing.huge }}>
+          {ctrl.error ? (
+            <Text variant="body" color="danger" align="center">
+              {ctrl.error}
+            </Text>
+          ) : (
+            <ActivityIndicator color={colors.primary} size="large" />
+          )}
+        </View>
+      </Screen>
+    );
+  }
 
-  return (
-    <StepFrame step={step} footer={<Button label={onboardingCopy.continue} onPress={continueNext} />}>
-      <Card tone="tint">
-        <Text variant="bodyStrong" color="heading">
-          {def.title}
-        </Text>
-        <Text variant="caption" color="muted" style={{ marginTop: 4 }}>
-          The form for this step is built in the next milestone. Continue saves your place so you can quit and resume here.
-        </Text>
-      </Card>
-    </StepFrame>
-  );
+  switch (ctrl.stepId) {
+    case 'basics':
+      return <BasicsStep ctrl={ctrl} />;
+    case 'faith':
+      return <FaithStep ctrl={ctrl} />;
+    case 'life_stage':
+      return <LifeStageStep ctrl={ctrl} />;
+    case 'intent':
+      return <IntentStep ctrl={ctrl} />;
+    case 'verify':
+      return <VerifyStep ctrl={ctrl} />;
+    case 'photos':
+      return <PhotosStep ctrl={ctrl} />;
+    case 'voice_intro':
+      return <VoiceIntroStep ctrl={ctrl} />;
+    case 'story':
+      return <StoryStep ctrl={ctrl} />;
+    case 'preferences':
+      return <PreferencesStep ctrl={ctrl} />;
+    default:
+      return <BasicsStep ctrl={ctrl} />;
+  }
 }
