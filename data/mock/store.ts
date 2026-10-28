@@ -191,6 +191,19 @@ export class MockStore {
     this.listeners.forEach((l) => l());
   }
 
+  /**
+   * For reads that lazily create rows: notify and persist only when the mutator
+   * reports a change. Reads that always notify would re-trigger themselves via
+   * subscribers and loop forever.
+   */
+  updateIf(mutator: (state: MockState) => boolean): void {
+    if (mutator(this.state)) {
+      this.state = { ...this.state };
+      this.schedulePersist();
+      this.listeners.forEach((l) => l());
+    }
+  }
+
   reset(): void {
     this.state = initialState();
     this.schedulePersist();

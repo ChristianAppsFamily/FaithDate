@@ -659,8 +659,10 @@ export class MockAdapter implements DataAdapter {
     const now = new Date();
     const dateKey = batchDateFor(now, rules.dailyBatch.refreshHourLocal);
     let ids: Id[] = [];
-    this.store.update((st) => {
+    this.store.updateIf((st) => {
+      const before = st.daily_batches.length;
       ids = this.ensureBatch(st, me, dateKey);
+      return st.daily_batches.length !== before;
     });
     const st = this.store.get();
     const acted = new Set(st.session.batch_actions[dateKey] ?? []);
@@ -928,14 +930,14 @@ export class MockAdapter implements DataAdapter {
     if (!this.isWoman(s, me) && !match.opened_at) {
       throw new AdapterError('women_first', 'She starts the conversation. You will be notified when she does.');
     }
-    this.store.update((st) => {
+    this.store.updateIf((st) => {
       const m = this.match(st, match_id);
-      if (!m.opened_at) {
-        m.opened_by = me;
-        m.opened_at = nowIso();
-        m.expires_at = null;
-        track('chat_opened_by_her', { match_id });
-      }
+      if (m.opened_at) return false;
+      m.opened_by = me;
+      m.opened_at = nowIso();
+      m.expires_at = null;
+      track('chat_opened_by_her', { match_id });
+      return true;
     });
     return this.summary(this.store.get(), this.match(this.store.get(), match_id), me);
   }
@@ -1553,10 +1555,12 @@ export class MockAdapter implements DataAdapter {
   async getCoachThread(): Promise<CoachThread> {
     const s = await this.state();
     const me = this.meId(s);
-    this.store.update((st) => {
+    this.store.updateIf((st) => {
+      const before = st.coach_messages.length + st.coach_usage.length + st.coach_settings.length;
       this.ensureGreeting(st, me);
       this.usage(st, me);
       this.coachSettings(st, me);
+      return st.coach_messages.length + st.coach_usage.length + st.coach_settings.length !== before;
     });
     const st = this.store.get();
     const usage = this.usage(st, me);
@@ -1580,8 +1584,10 @@ export class MockAdapter implements DataAdapter {
     const s = await this.state();
     const me = this.meId(s);
     let usage!: CoachUsage;
-    this.store.update((st) => {
+    this.store.updateIf((st) => {
+      const before = st.coach_usage.length;
       usage = this.usage(st, me);
+      return st.coach_usage.length !== before;
     });
     return { ...usage, free_left: Math.max(0, rules.auntMartha.freeQuestionsPerWeek - usage.free_used) };
   }
