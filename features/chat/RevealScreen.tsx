@@ -118,11 +118,11 @@ function PhotoFrame({ label, path, seed }: { label: string; path: string | null;
           justifyContent: 'center',
           overflow: 'hidden',
         }}
-        accessibilityLabel={revealed ? `${label}'s photo` : `${label}'s photo pending`}
+        accessibilityLabel={revealed ? (label === 'You' ? 'Your photo' : `${label}'s photo`) : `${label}'s photo pending`}
       >
         <User size={48} color="rgba(255,255,255,0.85)" />
         <Text variant="caption" color="immersiveMuted" style={{ marginTop: spacing.sm }} align="center">
-          {revealed ? `[${label}'s photo]` : 'Waiting'}
+          {revealed ? (label === 'You' ? '[Your photo]' : `[${label}'s photo]`) : 'Waiting'}
         </Text>
         <Text variant="overline" color="immersiveMuted" style={{ position: 'absolute', bottom: 8, opacity: 0.5 }}>
           {seed.slice(0, 6)}

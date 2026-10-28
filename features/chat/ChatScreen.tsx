@@ -43,6 +43,8 @@ export function ChatScreen() {
   const [extending, setExtending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
+  /** True after we request/agree to exchange while waiting for the other side (or auto-reply). */
+  const [awaitingReveal, setAwaitingReveal] = useState(false);
 
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recState = useAudioRecorderState(recorder, 250);
@@ -51,16 +53,42 @@ export function ChatScreen() {
     if (id) void adapter.markRead(id).catch(() => undefined);
   }, [id, thread?.messages.length]);
 
+  // Chat is already open → keep composer available. Do not auto-open on intro_invited;
+  // that would hide the first-move panel before she has actually started messaging.
   useEffect(() => {
-    if (thread?.status === 'open' || thread?.status === 'intro_invited') setComposerOpen(true);
+    if (thread?.status === 'open') setComposerOpen(true);
   }, [thread?.status]);
 
-  const needsFirstMove = Boolean(thread && thread.my_move && (thread.status === 'awaiting_her_move' || thread.status === 'intro_invited') && !composerOpen);
+  const draftingFirstMove = Boolean(
+    thread &&
+      thread.my_move &&
+      (thread.status === 'awaiting_her_move' || thread.status === 'intro_invited') &&
+      composerOpen,
+  );
+  const needsFirstMove = Boolean(
+    thread &&
+      thread.my_move &&
+      (thread.status === 'awaiting_her_move' || thread.status === 'intro_invited') &&
+      !composerOpen,
+  );
+  const showComposer = Boolean(thread && (thread.status === 'open' || draftingFirstMove));
+
+  // Auto-reply (and real other-side agree) complete exchange after a delay; navigate then.
+  useEffect(() => {
+    if (!awaitingReveal || !id || !thread?.exchange.exchanged_at) return;
+    setAwaitingReveal(false);
+    router.push({ pathname: '/reveal/[id]', params: { id } });
+  }, [awaitingReveal, id, router, thread?.exchange.exchanged_at]);
 
   const afterExchange = async (exchanged: boolean) => {
     if (!id) return;
     await threadQ.refresh();
-    if (exchanged) router.push({ pathname: '/reveal/[id]', params: { id } });
+    if (exchanged) {
+      setAwaitingReveal(false);
+      router.push({ pathname: '/reveal/[id]', params: { id } });
+    } else {
+      setAwaitingReveal(true);
+    }
   };
 
   const requestExchange = async () => {
@@ -83,6 +111,11 @@ export function ChatScreen() {
     setError(null);
     try {
       const ex = await adapter.respondToExchange(id, agree);
+      if (!agree) {
+        setAwaitingReveal(false);
+        await threadQ.refresh();
+        return;
+      }
       await afterExchange(Boolean(ex.exchanged_at));
     } catch (e) {
       setError(e instanceof AdapterError ? e.message : 'Could not respond.');
@@ -182,8 +215,13 @@ export function ChatScreen() {
         )}
       </View>
 
-      {!needsFirstMove && thread.status === 'open' ? (
+      {showComposer ? (
         <View style={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.md, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border }}>
+          {draftingFirstMove ? (
+            <Text variant="caption" color="muted" style={{ marginBottom: spacing.sm }}>
+              Send the first message to open the chat.
+            </Text>
+          ) : null}
           {recording ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.sm }}>
               <Text variant="bodyStrong" color="danger">
