@@ -25,7 +25,7 @@ interface ChoiceGroupProps<T extends string> {
 export function ChoiceGroup<T extends string>({ label, options, value, onChange, multi = false, values = [], onToggle, footer }: ChoiceGroupProps<T>) {
   const { spacing } = useTheme();
   return (
-    <View accessibilityRole="radiogroup" accessibilityLabel={label}>
+    <View accessibilityLabel={label}>
       <Text variant="captionStrong" color="heading" style={{ marginBottom: spacing.sm }}>
         {label}
       </Text>

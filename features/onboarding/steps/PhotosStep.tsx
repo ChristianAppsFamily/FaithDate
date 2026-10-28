@@ -1,12 +1,12 @@
 import { Plus, X } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { BlurBlob, Button, Text, IconButton } from '@/components/ui';
-import { onboardingCopy } from '@/config/onboarding';
+import { BlurBlob, IconButton, Text } from '@/components/ui';
 import { rules } from '@/config/rules';
 import { useTheme } from '@/theme';
 
+import { ContinueFooter } from '../form/ContinueFooter';
 import { StepFrame } from '../StepFrame';
 import type { OnboardingController } from '../useOnboardingDraft';
 
@@ -20,39 +20,25 @@ export function PhotosStep({ ctrl }: { ctrl: OnboardingController }) {
   const [count, setCount] = useState(draft.photo_count);
   const min = rules.onboarding.photosMin;
   const max = rules.onboarding.photosMax;
-
-  useEffect(() => {
-    setCount(draft.photo_count);
-  }, [draft]);
-
   const slots = Array.from({ length: max }, (_, i) => i);
   const canContinue = count >= min;
+
+  const addPhoto = () => setCount((c) => Math.min(max, c + 1));
+  const removePhoto = () => setCount((c) => Math.max(0, c - 1));
 
   return (
     <StepFrame
       step={ctrl.step}
       footer={
-        <View style={{ gap: spacing.sm }}>
-          <Text variant="caption" color="muted" align="center">
-            {count} of {max} · add at least {min}
-          </Text>
-          {ctrl.error ? (
-            <Text variant="caption" color="danger" align="center">
-              {ctrl.error}
-            </Text>
-          ) : null}
-          <Button
-            label={onboardingCopy.continue}
-            disabled={!canContinue}
-            loading={ctrl.saving}
-            onPress={() => void ctrl.continueWith({ photo_count: count })}
-          />
-        </View>
+        <ContinueFooter
+          disabled={!canContinue}
+          loading={ctrl.saving}
+          error={ctrl.error}
+          need={!canContinue ? `Add at least ${min} photos (${count} of ${max}).` : null}
+          onContinue={() => void ctrl.continueWith({ photo_count: count })}
+        />
       }
     >
-      <Text variant="caption" color="muted" style={{ lineHeight: 20 }}>
-        {onboardingCopy.photosNote}
-      </Text>
       <View style={[styles.grid, { gap: spacing.md }]}>
         {slots.map((i) => {
           const filled = i < count;
@@ -60,7 +46,16 @@ export function PhotosStep({ ctrl }: { ctrl: OnboardingController }) {
             return (
               <View
                 key={i}
-                style={[styles.slot, { backgroundColor: colors.lavenderTint, borderRadius: radii.lg, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }]}
+                style={[
+                  styles.slot,
+                  {
+                    backgroundColor: colors.lavenderTint,
+                    borderRadius: radii.lg,
+                    overflow: 'hidden',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  },
+                ]}
                 accessibilityLabel={`Photo ${i + 1}`}
               >
                 <BlurBlob size={120} cx={0.45 + (i % 3) * 0.05} cy={0.4 + (i % 2) * 0.08} />
@@ -69,8 +64,8 @@ export function PhotosStep({ ctrl }: { ctrl: OnboardingController }) {
                     accessibilityLabel={`Remove photo ${i + 1}`}
                     icon={<X size={16} color={colors.onPrimary} />}
                     tone="filled"
-                    size={36}
-                    onPress={() => setCount((c) => Math.max(0, c - 1))}
+                    size={44}
+                    onPress={removePhoto}
                   />
                 </View>
               </View>
@@ -81,20 +76,21 @@ export function PhotosStep({ ctrl }: { ctrl: OnboardingController }) {
             <Pressable
               key={i}
               disabled={!isNext}
-              onPress={() => setCount((c) => Math.min(max, c + 1))}
+              onPress={addPhoto}
               accessibilityRole="button"
               accessibilityLabel={isNext ? 'Add a photo' : 'Photo slot locked'}
-              style={[
+              style={({ pressed }) => [
                 styles.slot,
                 {
                   borderRadius: radii.lg,
                   borderWidth: 1.5,
                   borderColor: isNext ? colors.primary : colors.border,
                   borderStyle: 'dashed',
-                  opacity: isNext ? 1 : 0.45,
+                  opacity: !isNext ? 0.45 : pressed ? 0.75 : 1,
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: spacing.xs,
+                  backgroundColor: colors.surface,
                 },
               ]}
             >

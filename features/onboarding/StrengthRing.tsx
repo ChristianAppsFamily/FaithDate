@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { Text } from '@/components/ui';
@@ -17,6 +17,7 @@ export function StrengthRing({ percent, size = 120 }: StrengthRingProps) {
   const c = 2 * Math.PI * r;
   const clamped = Math.max(0, Math.min(100, percent));
   const offset = c * (1 - clamped / 100);
+  const center = size / 2;
 
   return (
     <View
@@ -25,11 +26,11 @@ export function StrengthRing({ percent, size = 120 }: StrengthRingProps) {
       accessibilityLabel={`Profile strength ${clamped} percent`}
       accessibilityValue={{ min: 0, max: 100, now: clamped }}
     >
-      <Svg width={size} height={size} style={StyleSheet.absoluteFill}>
-        <Circle cx={size / 2} cy={size / 2} r={r} stroke={colors.lavenderTint} strokeWidth={stroke} fill="none" />
+      <Svg width={size} height={size} style={{ position: 'absolute', top: 0, left: 0 }}>
+        <Circle cx={center} cy={center} r={r} stroke={colors.lavenderTint} strokeWidth={stroke} fill="none" />
         <Circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={center}
+          cy={center}
           r={r}
           stroke={colors.primary}
           strokeWidth={stroke}
@@ -37,8 +38,8 @@ export function StrengthRing({ percent, size = 120 }: StrengthRingProps) {
           strokeDasharray={`${c} ${c}`}
           strokeDashoffset={offset}
           strokeLinecap="round"
-          rotation={-90}
-          origin={`${size / 2}, ${size / 2}`}
+          // SVG attribute form — avoids RN Web warning from `rotation`/`origin` props.
+          transform={`rotate(-90 ${center} ${center})`}
         />
       </Svg>
       <Text variant="heading" color="heading">

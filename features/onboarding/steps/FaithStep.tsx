@@ -1,56 +1,42 @@
-import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { useState } from 'react';
 
-import { Button, Text, TextField } from '@/components/ui';
+import { TextField } from '@/components/ui';
 import { christianRoom, type AttendanceId, type DenominationId } from '@/config/faiths';
-import { onboardingCopy } from '@/config/onboarding';
-import { useTheme } from '@/theme';
 
 import { ChoiceGroup } from '../form/ChoiceGroup';
+import { ContinueFooter } from '../form/ContinueFooter';
 import { StepFrame } from '../StepFrame';
 import type { OnboardingController } from '../useOnboardingDraft';
 
 export function FaithStep({ ctrl }: { ctrl: OnboardingController }) {
-  const { spacing } = useTheme();
   const draft = ctrl.draft!;
   const [denomination, setDenomination] = useState<DenominationId | null>(draft.profile.denomination ?? null);
   const [attendance, setAttendance] = useState<AttendanceId | null>(draft.profile.church_attendance ?? null);
   const [homeChurch, setHomeChurch] = useState(draft.profile.home_church ?? '');
 
-  useEffect(() => {
-    setDenomination(draft.profile.denomination ?? null);
-    setAttendance(draft.profile.church_attendance ?? null);
-    setHomeChurch(draft.profile.home_church ?? '');
-  }, [draft]);
-
   const canContinue = denomination !== null && attendance !== null;
+  const need = !denomination ? 'Choose a denomination.' : !attendance ? 'Choose how often you attend.' : null;
 
   return (
     <StepFrame
       step={ctrl.step}
       footer={
-        <View style={{ gap: spacing.sm }}>
-          {ctrl.error ? (
-            <Text variant="caption" color="danger" align="center">
-              {ctrl.error}
-            </Text>
-          ) : null}
-          <Button
-            label={onboardingCopy.continue}
-            disabled={!canContinue}
-            loading={ctrl.saving}
-            onPress={() =>
-              void ctrl.continueWith({
-                profile: {
-                  faith: 'christian',
-                  denomination: denomination!,
-                  church_attendance: attendance!,
-                  home_church: homeChurch.trim() || null,
-                },
-              })
-            }
-          />
-        </View>
+        <ContinueFooter
+          disabled={!canContinue}
+          loading={ctrl.saving}
+          error={ctrl.error}
+          need={need}
+          onContinue={() =>
+            void ctrl.continueWith({
+              profile: {
+                faith: 'christian',
+                denomination: denomination!,
+                church_attendance: attendance!,
+                home_church: homeChurch.trim() || null,
+              },
+            })
+          }
+        />
       }
     >
       <ChoiceGroup

@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { useState } from 'react';
 
-import { Button, Text, TextField } from '@/components/ui';
-import { onboardingCopy } from '@/config/onboarding';
+import { TextField } from '@/components/ui';
 import type { MaritalHistory, WantsChildren } from '@/data';
-import { useTheme } from '@/theme';
 
 import { ChoiceGroup } from '../form/ChoiceGroup';
+import { ContinueFooter } from '../form/ContinueFooter';
 import { PrivacyNote } from '../form/PrivacyNote';
 import { StepFrame } from '../StepFrame';
 import type { OnboardingController } from '../useOnboardingDraft';
@@ -31,7 +29,6 @@ const WANTS: { value: WantsChildren; label: string }[] = [
 
 /** Design 02. Conditional fields appear when divorced/widowed or has children. */
 export function LifeStageStep({ ctrl }: { ctrl: OnboardingController }) {
-  const { spacing } = useTheme();
   const draft = ctrl.draft!;
   const [marital, setMarital] = useState<MaritalHistory | null>(draft.profile.marital_history ?? null);
   const [sinceYear, setSinceYear] = useState(draft.profile.marital_since_year ? String(draft.profile.marital_since_year) : '');
@@ -41,16 +38,9 @@ export function LifeStageStep({ ctrl }: { ctrl: OnboardingController }) {
   const [childrenAges, setChildrenAges] = useState((draft.profile.children_ages ?? []).join(', '));
   const [wants, setWants] = useState<WantsChildren | null>(draft.profile.wants_children ?? null);
 
-  useEffect(() => {
-    setMarital(draft.profile.marital_history ?? null);
-    setSinceYear(draft.profile.marital_since_year ? String(draft.profile.marital_since_year) : '');
-    setHasChildren(draft.profile.has_children === undefined ? null : draft.profile.has_children ? 'yes' : 'no');
-    setChildrenAges((draft.profile.children_ages ?? []).join(', '));
-    setWants(draft.profile.wants_children ?? null);
-  }, [draft]);
-
   const needsYear = marital === 'divorced' || marital === 'widowed';
   const canContinue = marital !== null && hasChildren !== null && wants !== null;
+  const need = !marital ? 'Choose your marital history.' : !hasChildren ? 'Do you have children?' : !wants ? 'Do you want children?' : null;
 
   const onContinue = () => {
     const ages = childrenAges
@@ -72,16 +62,7 @@ export function LifeStageStep({ ctrl }: { ctrl: OnboardingController }) {
   return (
     <StepFrame
       step={ctrl.step}
-      footer={
-        <View style={{ gap: spacing.sm }}>
-          {ctrl.error ? (
-            <Text variant="caption" color="danger" align="center">
-              {ctrl.error}
-            </Text>
-          ) : null}
-          <Button label={onboardingCopy.continue} onPress={onContinue} disabled={!canContinue} loading={ctrl.saving} />
-        </View>
-      }
+      footer={<ContinueFooter disabled={!canContinue} loading={ctrl.saving} error={ctrl.error} need={need} onContinue={onContinue} />}
     >
       <ChoiceGroup label="Marital history" options={MARITAL} value={marital} onChange={setMarital} />
       {needsYear ? (

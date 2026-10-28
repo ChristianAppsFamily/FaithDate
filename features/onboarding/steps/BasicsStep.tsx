@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { useState } from 'react';
 
-import { Button, Text, TextField } from '@/components/ui';
+import { TextField } from '@/components/ui';
 import { onboardingCopy } from '@/config/onboarding';
 import { rules } from '@/config/rules';
 import type { Gender } from '@/data';
 import { ageFromBirthdate } from '@/lib/time';
-import { useTheme } from '@/theme';
 
 import { ChoiceGroup } from '../form/ChoiceGroup';
+import { ContinueFooter } from '../form/ContinueFooter';
 import { StepFrame } from '../StepFrame';
 import type { OnboardingController } from '../useOnboardingDraft';
 
@@ -18,7 +17,6 @@ const GENDERS: { value: Gender; label: string }[] = [
 ];
 
 export function BasicsStep({ ctrl }: { ctrl: OnboardingController }) {
-  const { spacing } = useTheme();
   const draft = ctrl.draft!;
   const [firstName, setFirstName] = useState(draft.profile.first_name ?? '');
   const [gender, setGender] = useState<Gender | null>(draft.profile.gender ?? null);
@@ -26,16 +24,20 @@ export function BasicsStep({ ctrl }: { ctrl: OnboardingController }) {
   const [city, setCity] = useState(draft.profile.city ?? '');
   const [birthError, setBirthError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setFirstName(draft.profile.first_name ?? '');
-    setGender(draft.profile.gender ?? null);
-    setBirthdate(draft.profile.birthdate ?? '');
-    setCity(draft.profile.city ?? '');
-  }, [draft]);
-
   const age = /^\d{4}-\d{2}-\d{2}$/.test(birthdate) ? ageFromBirthdate(birthdate) : null;
   const under18 = age !== null && age < rules.onboarding.minAge;
   const canContinue = firstName.trim().length > 0 && gender !== null && Boolean(city.trim()) && age !== null && !under18;
+  const need = !firstName.trim()
+    ? 'Add your first name.'
+    : !gender
+      ? 'Choose female or male.'
+      : age === null
+        ? 'Enter your birthdate as YYYY-MM-DD.'
+        : under18
+          ? onboardingCopy.under18
+          : !city.trim()
+            ? 'Add your city.'
+            : null;
 
   const onContinue = () => {
     if (under18) {
@@ -61,16 +63,7 @@ export function BasicsStep({ ctrl }: { ctrl: OnboardingController }) {
   return (
     <StepFrame
       step={ctrl.step}
-      footer={
-        <View style={{ gap: spacing.sm }}>
-          {ctrl.error ? (
-            <Text variant="caption" color="danger" align="center">
-              {ctrl.error}
-            </Text>
-          ) : null}
-          <Button label={onboardingCopy.continue} onPress={onContinue} disabled={!canContinue} loading={ctrl.saving} />
-        </View>
-      }
+      footer={<ContinueFooter disabled={!canContinue} loading={ctrl.saving} error={ctrl.error} need={need} onContinue={onContinue} />}
     >
       <TextField
         label="First name"

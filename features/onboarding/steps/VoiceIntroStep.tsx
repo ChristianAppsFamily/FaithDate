@@ -1,5 +1,5 @@
 import { Star } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { VoiceRecorder, type RecordedClip } from '@/components/media/VoiceRecorder';
@@ -8,6 +8,7 @@ import { onboardingCopy, voiceIntroStarters, type VoiceIntroStarterId } from '@/
 import type { VoiceClip } from '@/data';
 import { useTheme } from '@/theme';
 
+import { ContinueFooter } from '../form/ContinueFooter';
 import { StepFrame } from '../StepFrame';
 import type { OnboardingController } from '../useOnboardingDraft';
 
@@ -21,12 +22,6 @@ export function VoiceIntroStep({ ctrl }: { ctrl: OnboardingController }) {
   const [clip, setClip] = useState<RecordedClip | null>(
     draft.voice_intro ? { storage_path: draft.voice_intro.storage_path, duration_s: draft.voice_intro.duration_s } : null,
   );
-
-  useEffect(() => {
-    const s = voiceIntroStarters.find((x) => x.label === draft.voice_intro?.starter_label)?.id as VoiceIntroStarterId | undefined;
-    if (s) setStarterId(s);
-    setClip(draft.voice_intro ? { storage_path: draft.voice_intro.storage_path, duration_s: draft.voice_intro.duration_s } : null);
-  }, [draft]);
 
   const starter = voiceIntroStarters.find((s) => s.id === starterId) ?? voiceIntroStarters[0]!;
 
@@ -48,26 +43,24 @@ export function VoiceIntroStep({ ctrl }: { ctrl: OnboardingController }) {
     <StepFrame
       step={ctrl.step}
       footer={
-        <View style={{ gap: spacing.sm }}>
-          <View style={styles.nudge}>
-            <Star size={14} color={colors.primary} fill={colors.primary} />
-            <Text variant="caption" color="muted" style={{ flex: 1 }}>
-              {onboardingCopy.voiceNudge}
-            </Text>
-          </View>
-          {ctrl.error ? (
-            <Text variant="caption" color="danger" align="center">
-              {ctrl.error}
-            </Text>
-          ) : null}
-          <Button
-            label={onboardingCopy.continue}
-            disabled={!clip}
-            loading={ctrl.saving}
-            onPress={() => saveWith(clip)}
-          />
-          <Button label={onboardingCopy.skipForNow} variant="ghost" disabled={ctrl.saving} onPress={() => saveWith(null)} />
-        </View>
+        <ContinueFooter
+          disabled={!clip}
+          loading={ctrl.saving}
+          error={ctrl.error}
+          need={!clip ? 'Record at least 30 seconds, or skip for now.' : null}
+          onContinue={() => saveWith(clip)}
+          secondary={
+            <View style={{ gap: spacing.sm }}>
+              <View style={styles.nudge}>
+                <Star size={14} color={colors.primary} fill={colors.primary} />
+                <Text variant="caption" color="muted" style={{ flex: 1 }}>
+                  {onboardingCopy.voiceNudge}
+                </Text>
+              </View>
+              <Button label={onboardingCopy.skipForNow} variant="ghost" disabled={ctrl.saving} onPress={() => saveWith(null)} />
+            </View>
+          }
+        />
       }
     >
       <View style={[styles.starters, { gap: spacing.sm }]}>

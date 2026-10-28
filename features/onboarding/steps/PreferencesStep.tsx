@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { View } from 'react-native';
 
-import { Button, Text, TextField } from '@/components/ui';
+import { Text, TextField } from '@/components/ui';
 import { christianRoom, type DenominationId } from '@/config/faiths';
-import { onboardingCopy } from '@/config/onboarding';
 import { useTheme } from '@/theme';
 
 import { ChoiceGroup } from '../form/ChoiceGroup';
+import { ContinueFooter } from '../form/ContinueFooter';
 import { StepFrame } from '../StepFrame';
 import type { OnboardingController } from '../useOnboardingDraft';
 
@@ -37,19 +37,17 @@ export function PreferencesStep({ ctrl }: { ctrl: OnboardingController }) {
     draft.preferences.open_to_children === undefined ? null : draft.preferences.open_to_children ? 'yes' : 'no',
   );
 
-  useEffect(() => {
-    setAgeMin(String(draft.preferences.age_min ?? 25));
-    setAgeMax(String(draft.preferences.age_max ?? 40));
-    setDistance(String(draft.preferences.distance_km ?? 80));
-    setDenoms(draft.preferences.denominations ?? []);
-    setOpenDivorced(draft.preferences.open_to_divorced === undefined ? null : draft.preferences.open_to_divorced ? 'yes' : 'no');
-    setOpenChildren(draft.preferences.open_to_children === undefined ? null : draft.preferences.open_to_children ? 'yes' : 'no');
-  }, [draft]);
-
   const minN = Number(ageMin);
   const maxN = Number(ageMax);
   const agesOk = Number.isFinite(minN) && Number.isFinite(maxN) && minN >= 18 && maxN <= 99 && minN <= maxN;
   const canContinue = agesOk && openDivorced !== null && openChildren !== null;
+  const need = !agesOk
+    ? 'Age min must be 18+ and not above max.'
+    : !openDivorced
+      ? 'Are you open to someone divorced?'
+      : !openChildren
+        ? 'Are you open to someone with children?'
+        : null;
 
   const toggleDenom = (id: DenominationId) => {
     setDenoms((prev) => (prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]));
@@ -59,30 +57,24 @@ export function PreferencesStep({ ctrl }: { ctrl: OnboardingController }) {
     <StepFrame
       step={ctrl.step}
       footer={
-        <View style={{ gap: spacing.sm }}>
-          {ctrl.error ? (
-            <Text variant="caption" color="danger" align="center">
-              {ctrl.error}
-            </Text>
-          ) : null}
-          <Button
-            label={onboardingCopy.continue}
-            disabled={!canContinue}
-            loading={ctrl.saving}
-            onPress={() =>
-              void ctrl.continueWith({
-                preferences: {
-                  age_min: minN,
-                  age_max: maxN,
-                  distance_km: Number(distance) || 0,
-                  denominations: denoms,
-                  open_to_divorced: openDivorced === 'yes',
-                  open_to_children: openChildren === 'yes',
-                },
-              })
-            }
-          />
-        </View>
+        <ContinueFooter
+          disabled={!canContinue}
+          loading={ctrl.saving}
+          error={ctrl.error}
+          need={need}
+          onContinue={() =>
+            void ctrl.continueWith({
+              preferences: {
+                age_min: minN,
+                age_max: maxN,
+                distance_km: Number(distance) || 0,
+                denominations: denoms,
+                open_to_divorced: openDivorced === 'yes',
+                open_to_children: openChildren === 'yes',
+              },
+            })
+          }
+        />
       }
     >
       <View style={{ flexDirection: 'row', gap: spacing.md }}>

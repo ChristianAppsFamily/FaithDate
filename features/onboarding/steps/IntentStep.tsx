@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { View } from 'react-native';
 
-import { Button, Card, Text } from '@/components/ui';
-import { onboardingCopy } from '@/config/onboarding';
+import { Card, Text } from '@/components/ui';
 import type { Intent } from '@/data';
 import { useTheme } from '@/theme';
 
+import { ContinueFooter } from '../form/ContinueFooter';
 import { StepFrame } from '../StepFrame';
 import type { OnboardingController } from '../useOnboardingDraft';
 
@@ -27,27 +27,17 @@ export function IntentStep({ ctrl }: { ctrl: OnboardingController }) {
   const draft = ctrl.draft!;
   const [intent, setIntent] = useState<Intent | null>(draft.profile.intent ?? null);
 
-  useEffect(() => {
-    setIntent(draft.profile.intent ?? null);
-  }, [draft]);
-
   return (
     <StepFrame
       step={ctrl.step}
       footer={
-        <View style={{ gap: spacing.sm }}>
-          {ctrl.error ? (
-            <Text variant="caption" color="danger" align="center">
-              {ctrl.error}
-            </Text>
-          ) : null}
-          <Button
-            label={onboardingCopy.continue}
-            disabled={!intent}
-            loading={ctrl.saving}
-            onPress={() => void ctrl.continueWith({ profile: { intent: intent! } })}
-          />
-        </View>
+        <ContinueFooter
+          disabled={!intent}
+          loading={ctrl.saving}
+          error={ctrl.error}
+          need={!intent ? 'Choose what you are here for.' : null}
+          onContinue={() => void ctrl.continueWith({ profile: { intent: intent! } })}
+        />
       }
     >
       <View style={{ gap: spacing.md }}>

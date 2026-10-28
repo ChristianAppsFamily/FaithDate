@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
-import { Button, Chip, Text, TextField } from '@/components/ui';
+import { Chip, Text, TextField } from '@/components/ui';
 import { christianRoom, getPrompt } from '@/config/faiths';
-import { onboardingCopy } from '@/config/onboarding';
 import { rules } from '@/config/rules';
 import type { PromptAnswer } from '@/data';
 import { useTheme } from '@/theme';
 
+import { ContinueFooter } from '../form/ContinueFooter';
 import { StepFrame } from '../StepFrame';
 import type { OnboardingController } from '../useOnboardingDraft';
 
@@ -17,10 +17,11 @@ interface PromptSlot {
 }
 
 const DEFAULT_IDS = christianRoom.prompts.filter((p) => p.isDefault).map((p) => p.id);
+const MIN_ANSWER = 10;
 
 /** Three prompt answers, interests, core values, optional testimony. */
 export function StoryStep({ ctrl }: { ctrl: OnboardingController }) {
-  const { colors, spacing } = useTheme();
+  const { spacing } = useTheme();
   const draft = ctrl.draft!;
 
   const initialSlots: PromptSlot[] = useMemo(() => {
@@ -42,14 +43,10 @@ export function StoryStep({ ctrl }: { ctrl: OnboardingController }) {
   const [testimony, setTestimony] = useState(draft.testimony?.text ?? '');
   const [swapIndex, setSwapIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    setInterests(draft.profile.interests ?? []);
-    setCoreValues(draft.profile.core_values ?? '');
-    setTestimony(draft.testimony?.text ?? '');
-  }, [draft]);
-
   const usedIds = new Set(slots.map((s) => s.promptId));
-  const canContinue = slots.every((s) => s.text.trim().length >= 10);
+  const shortCount = slots.filter((s) => s.text.trim().length < MIN_ANSWER).length;
+  const canContinue = shortCount === 0;
+  const need = shortCount > 0 ? `Add a short answer to ${shortCount} more prompt${shortCount === 1 ? '' : 's'} (at least a couple of sentences).` : null;
 
   const toggleInterest = (label: string) => {
     setInterests((prev) => (prev.includes(label) ? prev.filter((x) => x !== label) : [...prev, label]));
@@ -71,16 +68,7 @@ export function StoryStep({ ctrl }: { ctrl: OnboardingController }) {
   return (
     <StepFrame
       step={ctrl.step}
-      footer={
-        <View style={{ gap: spacing.sm }}>
-          {ctrl.error ? (
-            <Text variant="caption" color="danger" align="center">
-              {ctrl.error}
-            </Text>
-          ) : null}
-          <Button label={onboardingCopy.continue} disabled={!canContinue} loading={ctrl.saving} onPress={onContinue} />
-        </View>
-      }
+      footer={<ContinueFooter disabled={!canContinue} loading={ctrl.saving} error={ctrl.error} need={need} onContinue={onContinue} />}
     >
       {slots.map((slot, index) => {
         const prompt = getPrompt('christian', slot.promptId);
@@ -118,7 +106,7 @@ export function StoryStep({ ctrl }: { ctrl: OnboardingController }) {
               </View>
             ) : null}
             <TextField
-              label={`Your answer`}
+              label={`Answer ${index + 1}`}
               value={slot.text}
               onChangeText={(text) => setSlots((prev) => prev.map((s, i) => (i === index ? { ...s, text } : s)))}
               placeholder="A few sentences is perfect."
@@ -161,10 +149,6 @@ export function StoryStep({ ctrl }: { ctrl: OnboardingController }) {
         style={{ minHeight: 96, textAlignVertical: 'top', paddingTop: 12 }}
         hint="Adds 10% to your profile strength."
       />
-
-      <Text variant="caption" color="muted" style={{ color: colors.muted }}>
-        Answers need at least a couple of sentences so people have something real to like.
-      </Text>
     </StepFrame>
   );
 }

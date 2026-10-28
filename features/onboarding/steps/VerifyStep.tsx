@@ -1,11 +1,12 @@
 import { Camera, Check } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 import { Button, Card, Text } from '@/components/ui';
 import { onboardingCopy } from '@/config/onboarding';
 import { useTheme } from '@/theme';
 
+import { ContinueFooter } from '../form/ContinueFooter';
 import { StepFrame } from '../StepFrame';
 import type { OnboardingController } from '../useOnboardingDraft';
 
@@ -19,10 +20,6 @@ export function VerifyStep({ ctrl }: { ctrl: OnboardingController }) {
   const [verified, setVerified] = useState(draft.profile.verified === true);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    setVerified(draft.profile.verified === true);
-  }, [draft]);
-
   const runCheck = () => {
     setBusy(true);
     setTimeout(() => {
@@ -35,22 +32,18 @@ export function VerifyStep({ ctrl }: { ctrl: OnboardingController }) {
     <StepFrame
       step={ctrl.step}
       footer={
-        <View style={{ gap: spacing.sm }}>
-          {ctrl.error ? (
-            <Text variant="caption" color="danger" align="center">
-              {ctrl.error}
-            </Text>
-          ) : null}
-          <Button
-            label={onboardingCopy.continue}
-            disabled={!verified}
-            loading={ctrl.saving}
-            onPress={() => void ctrl.continueWith({ profile: { verified: true } })}
-          />
-          {!verified ? (
-            <Button label="Skip for now" variant="ghost" onPress={() => void ctrl.continueWith({ profile: { verified: false } })} disabled={ctrl.saving} />
-          ) : null}
-        </View>
+        <ContinueFooter
+          disabled={!verified}
+          loading={ctrl.saving}
+          error={ctrl.error}
+          need={!verified ? 'Run the selfie check, or skip for now.' : null}
+          onContinue={() => void ctrl.continueWith({ profile: { verified: true } })}
+          secondary={
+            !verified ? (
+              <Button label="Skip for now" variant="ghost" onPress={() => void ctrl.continueWith({ profile: { verified: false } })} disabled={ctrl.saving} />
+            ) : null
+          }
+        />
       }
     >
       <Card tone="tint" style={{ alignItems: 'center', paddingVertical: spacing.xxxl }}>

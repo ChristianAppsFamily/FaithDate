@@ -84,9 +84,11 @@ export function Chip({ label, variant = 'tag', selected = false, onPress, icon, 
   return (
     <Pressable
       onPress={onPress}
-      accessibilityRole={variant === 'choice' || variant === 'starter' ? 'radio' : 'button'}
+      // Use button (not radio): role="radio" on RN Web can swallow clicks outside a native radio group.
+      accessibilityRole="button"
       accessibilityState={{ selected }}
       accessibilityLabel={accessibilityLabel ?? label}
+      hitSlop={4}
       style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }, style]}
     >
       {content}
