@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "FaithDate",
+    "slug": "faithdate",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "faithdate",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "FaithDate uses your microphone to record your voice intro and voice notes."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#5B2A86",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": ["android.permission.RECORD_AUDIO"]
+    },
+    "web": {
+      "output": "static",
+      "bundler": "metro",
+      "favicon": "./assets/images/favicon.png",
+      "name": "FaithDate",
+      "shortName": "FaithDate",
+      "description": "Date by faith, not by sight.",
+      "themeColor": "#5B2A86",
+      "backgroundColor": "#3A1A5C"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#3A1A5C",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 96
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "FaithDate uses your microphone to record your voice intro and voice notes."
+        }
+      ],
+      "expo-sharing"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
