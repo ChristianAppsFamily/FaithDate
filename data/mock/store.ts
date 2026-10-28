@@ -108,8 +108,13 @@ export function emptyDraft(): OnboardingDraft {
   };
 }
 
+/** Seed rows are module constants; clone them so mutations never leak into a later reset. */
+function clone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
 export function initialState(): MockState {
-  return {
+  return clone<MockState>({
     version: 1,
     session: {
       current_user_id: null,
@@ -145,7 +150,7 @@ export function initialState(): MockState {
     accountability_partners: [],
     reports: [],
     blocks: [],
-  };
+  });
 }
 
 type Listener = () => void;

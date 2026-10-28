@@ -56,7 +56,7 @@ export function Screen({
         <View style={[styles.flex, styles.center]}>{column}</View>
       )}
       {footer ? (
-        <View style={styles.center}>
+        <View style={styles.footerWrap}>
           <View style={[styles.column, { paddingHorizontal: padding, paddingTop: spacing.md, paddingBottom: Math.max(insets.bottom, spacing.lg) + bottomInset }]}>
             {footer}
           </View>
@@ -72,6 +72,10 @@ const styles = StyleSheet.create({
   },
   center: {
     flexGrow: 1,
+    alignItems: 'center',
+  },
+  footerWrap: {
+    flexShrink: 0,
     alignItems: 'center',
   },
   column: {
