@@ -1,25 +1,45 @@
-import { Screen, TabHeader, TAB_BAR_HEIGHT } from '@/components/ui';
-import { adapter } from '@/data';
-import { ShellPlaceholder } from '@/features/shell/ShellPlaceholder';
-import { useAdapterQuery } from '@/hooks/useAdapterQuery';
+import { View } from 'react-native';
 
+import { Card, Screen, TabHeader, Text, TAB_BAR_HEIGHT } from '@/components/ui';
+import { adapter } from '@/data';
+import { useAdapterQuery } from '@/hooks/useAdapterQuery';
+import { useTheme } from '@/theme';
+
+import { LikeInboxRow } from './LikeInboxRow';
+
+/** Design 06. Who liked you — Lilies pinned with gold, standard rows expand to Pass / Like back. */
 export function LikesScreen() {
+  const { spacing } = useTheme();
   const inbox = useAdapterQuery(() => adapter.getLikesInbox());
-  const count = inbox.data?.length ?? 0;
+  const items = inbox.data ?? [];
+  const count = items.length;
+
   return (
     <Screen grouped bottomInset={TAB_BAR_HEIGHT}>
       <TabHeader eyebrow={`${count} ${count === 1 ? 'person' : 'people'} liked you`} title="Likes you" />
-      <ShellPlaceholder
-        milestone="Milestone 3"
-        rows={(inbox.data ?? []).map((item) => ({
-          id: item.like.id,
-          title: `${item.from.profile.first_name}, ${item.from.age}${item.like.is_lily ? ' · Sent you a Lily' : ''}`,
-          subtitle: `${item.target_label}${item.like.comment_text ? ` · "${item.like.comment_text}"` : ''}`,
-          avatarSeed: item.from.profile.id,
-        }))}
-        emptyTitle="No likes yet"
-        emptyBody="When someone likes your voice intro or an answer, it shows up here."
-      />
+
+      {inbox.loading && !inbox.data ? (
+        <Text variant="caption" color="muted">
+          Loading likes…
+        </Text>
+      ) : null}
+
+      {count === 0 && inbox.data ? (
+        <Card>
+          <Text variant="subheading" color="heading">
+            No likes yet
+          </Text>
+          <Text variant="caption" color="muted" style={{ marginTop: 4, lineHeight: 20 }}>
+            When someone likes your voice intro or an answer, it shows up here. Lilies always pin to the top.
+          </Text>
+        </Card>
+      ) : (
+        <View style={{ gap: spacing.md }}>
+          {items.map((item) => (
+            <LikeInboxRow key={item.like.id} item={item} defaultExpanded={item.like.is_lily} />
+          ))}
+        </View>
+      )}
     </Screen>
   );
 }

@@ -12,6 +12,8 @@ export type { IconButtonProps, IconButtonTone } from './IconButton';
 export { ProgressBar } from './ProgressBar';
 export { Screen } from './Screen';
 export type { ScreenProps } from './Screen';
+export { Sheet } from './Sheet';
+export type { SheetProps } from './Sheet';
 export { TAB_BAR_HEIGHT, TabBar } from './TabBar';
 export { TabHeader } from './TabHeader';
 export type { TabHeaderProps } from './TabHeader';

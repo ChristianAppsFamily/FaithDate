@@ -30,6 +30,10 @@ npm test            # jest: mock adapter rules
 
 Tap **Create your profile** on the welcome screen to walk all 10 steps (basics, faith, life stage, intent, verify, photos, voice intro, story, preferences). Progress saves as you go — quit and reopen to resume. The voice intro uses the real microphone through expo-audio (30–90 seconds, skip allowed). Photos in Phase 1 are abstract placeholders; the adapter only stores a count until real uploads land with Supabase.
 
+## Discover, likes, and wallet
+
+Signed in, **Discover** shows today's batch of up to 10 ranked profiles (voice and verified rank higher). Like a voice intro or a specific answer from the heart buttons — optional note, or spend Talents on a Lily. Save is private (Saved tab). **Likes you** pins Lilies with a gold accent; expand a row to Pass or Like back. **Profile → Wallet** shows Talents, earn/spend, the never-buy list, and mock purchase bundles.
+
 ## Try the demo account
 
 On the welcome screen tap **I already have an account** to sign in as **Grace** (29, Atlanta, verified, seeking a spouse). Her account is pre-seeded with:

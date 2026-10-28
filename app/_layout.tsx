@@ -70,6 +70,7 @@ function RootStack() {
         <Stack.Screen name="index" />
         <Stack.Screen name="(onboarding)" />
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="wallet" options={{ presentation: 'modal' }} />
         <Stack.Screen name="dev" options={{ presentation: 'modal' }} />
       </Stack>
     </View>

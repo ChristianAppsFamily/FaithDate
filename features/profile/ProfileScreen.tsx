@@ -59,7 +59,7 @@ export function ProfileScreen() {
         </Card>
       ) : null}
 
-      <Card style={{ marginTop: spacing.md }}>
+      <Card style={{ marginTop: spacing.md }} onPress={() => router.push('/wallet')} accessibilityRole="button" accessibilityLabel={`Open ${currency.name} wallet`}>
         <View style={styles.rowBetween}>
           <View>
             <Text variant="captionStrong" color="muted">
@@ -69,9 +69,12 @@ export function ProfileScreen() {
               {wallet.data?.balance ?? 0}
             </Text>
           </View>
-          <Text variant="caption" color="muted" style={{ flex: 1, textAlign: 'right' }}>
-            Wallet arrives in Milestone 3
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Text variant="captionStrong" color="primary">
+              Wallet
+            </Text>
+            <ChevronRight size={18} color={colors.primary} />
+          </View>
         </View>
       </Card>
 
