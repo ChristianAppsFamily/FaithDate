@@ -70,6 +70,10 @@ function RootStack() {
         <Stack.Screen name="index" />
         <Stack.Screen name="(onboarding)" />
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="match/[id]" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
+        <Stack.Screen name="chat/[id]" />
+        <Stack.Screen name="reveal/[id]" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
+        <Stack.Screen name="aunt-martha" />
         <Stack.Screen name="wallet" options={{ presentation: 'modal' }} />
         <Stack.Screen name="dev" options={{ presentation: 'modal' }} />
       </Stack>

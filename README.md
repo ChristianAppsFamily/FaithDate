@@ -32,7 +32,11 @@ Tap **Create your profile** on the welcome screen to walk all 10 steps (basics, 
 
 ## Discover, likes, and wallet
 
-Signed in, **Discover** shows today's batch of up to 10 ranked profiles (voice and verified rank higher). Like a voice intro or a specific answer from the heart buttons — optional note, or spend Talents on a Lily. Save is private (Saved tab). **Likes you** pins Lilies with a gold accent; expand a row to Pass or Like back. **Profile → Wallet** shows Talents, earn/spend, the never-buy list, and mock purchase bundles.
+Signed in, **Discover** shows today's batch of up to 10 ranked profiles (voice and verified rank higher). Like a voice intro or a specific answer from the heart buttons — optional note, or spend Talents on a Lily. Save is private (Saved tab). **Likes you** pins Lilies with a gold accent; expand a row to Pass or Like back. Mutual likes open the match moment, then chat. **Profile → Wallet** shows Talents, earn/spend, the never-buy list, and mock purchase bundles.
+
+## Match, chats, and Photo Exchange
+
+**Like back** (or a returned like from Discover) opens the full-screen match moment — prayer hands, blurred avatars, then **Open to view your match**. **Chats** pins Aunt Martha (stub until the next milestone) and lists matches with status pills. Daniel is waiting on her first move (48h window, one 24h extension, or invite his voice intro). Marcus is an open chat with Photo Exchange ready — **Exchange photos** (gold once) / **Not yet**; when both agree, the reveal screen shows silhouette frames together. Text and voice notes work; phone numbers and handles are blocked until exchange. **Close kindly** ends a match with a respectful template.
 
 ## Try the demo account
 

@@ -36,7 +36,12 @@ export function LikesScreen() {
       ) : (
         <View style={{ gap: spacing.md }}>
           {items.map((item) => (
-            <LikeInboxRow key={item.like.id} item={item} defaultExpanded={item.like.is_lily} />
+            <LikeInboxRow
+              key={item.like.id}
+              item={item}
+              defaultExpanded={item.like.is_lily}
+              onChanged={() => void inbox.refresh()}
+            />
           ))}
         </View>
       )}

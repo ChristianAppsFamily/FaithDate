@@ -1,6 +1,7 @@
+import { useRouter } from 'expo-router';
 import { SlidersHorizontal } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
-import { Modal, View } from 'react-native';
+import { View } from 'react-native';
 
 import { Button, IconButton, Screen, TabHeader, Text, TAB_BAR_HEIGHT } from '@/components/ui';
 import { rules } from '@/config/rules';
@@ -15,11 +16,11 @@ import { LikeSheet, type LikeTarget } from './LikeSheet';
 /** Design 05. Daily batch of 10, filter sheet, like sheet, caught-up empty state. No swipe. */
 export function DiscoverScreen() {
   const { colors, radii, spacing } = useTheme();
+  const router = useRouter();
   const [filters, setFilters] = useState<BatchFilters>({});
   const [filterOpen, setFilterOpen] = useState(false);
   const [likeCard, setLikeCard] = useState<ProfileCard | null>(null);
   const [likeTarget, setLikeTarget] = useState<LikeTarget | null>(null);
-  const [matchName, setMatchName] = useState<string | null>(null);
 
   const batch = useAdapterQuery(() => adapter.getBatch(filters), [filters.has_voice_intro]);
   const wallet = useAdapterQuery(() => adapter.getWallet());
@@ -122,24 +123,12 @@ export function DiscoverScreen() {
           setLikeCard(null);
           setLikeTarget(null);
         }}
-        onSent={({ matched, otherName }) => {
-          if (matched) setMatchName(otherName);
+        onSent={({ matched, matchId }) => {
+          if (matched && matchId) {
+            router.push({ pathname: '/match/[id]', params: { id: matchId } });
+          }
         }}
       />
-
-      <Modal visible={matchName !== null} transparent animationType="fade" onRequestClose={() => setMatchName(null)}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(28,23,38,0.55)', alignItems: 'center', justifyContent: 'center', padding: spacing.xl }}>
-          <View style={{ width: '100%', maxWidth: 360, backgroundColor: colors.surface, borderRadius: radii.xxl, padding: spacing.xxxl, gap: spacing.lg }}>
-            <Text variant="title" color="heading" align="center">
-              You liked each other
-            </Text>
-            <Text variant="body" color="muted" align="center" style={{ lineHeight: 24 }}>
-              You and {matchName} both reached for the same person. The full match moment arrives in the next milestone — for now, find them in Chats.
-            </Text>
-            <Button label="OK" onPress={() => setMatchName(null)} />
-          </View>
-        </View>
-      </Modal>
     </Screen>
   );
 }

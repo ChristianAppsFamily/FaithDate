@@ -19,7 +19,7 @@ interface LikeSheetProps {
   likesLeft: number;
   talentBalance: number;
   onClose: () => void;
-  onSent: (result: { matched: boolean; otherName: string }) => void;
+  onSent: (result: { matched: boolean; matchId: string | null; otherName: string }) => void;
 }
 
 /** Like a specific voice intro or prompt answer. Optional comment; Lily spends Talents. */
@@ -54,7 +54,7 @@ export function LikeSheet({ visible, card, target, likesLeft, talentBalance, onC
       setComment('');
       setBusy(false);
       onClose();
-      onSent({ matched: result.match !== null, otherName });
+      onSent({ matched: result.match !== null, matchId: result.match?.id ?? null, otherName });
     } catch (e) {
       setBusy(false);
       if (e instanceof AdapterError) setError(e.message);

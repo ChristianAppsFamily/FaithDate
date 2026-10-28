@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { Flower2, Heart } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -11,14 +12,16 @@ interface LikeInboxRowProps {
   item: LikeInboxItem;
   /** Expand Lily rows by default; standard rows expand on heart tap. */
   defaultExpanded?: boolean;
+  onChanged?: () => void;
 }
 
 /**
  * Design 06 inbox row. Lilies get the gold accent (once on that card).
  * Standard likes start collapsed; the heart expands Pass / Like back.
  */
-export function LikeInboxRow({ item, defaultExpanded = false }: LikeInboxRowProps) {
+export function LikeInboxRow({ item, defaultExpanded = false, onChanged }: LikeInboxRowProps) {
   const { colors, spacing } = useTheme();
+  const router = useRouter();
   const [expanded, setExpanded] = useState(defaultExpanded || item.like.is_lily);
   const [busy, setBusy] = useState(false);
   const name = `${item.from.profile.first_name}, ${item.from.age}`;
@@ -27,7 +30,9 @@ export function LikeInboxRow({ item, defaultExpanded = false }: LikeInboxRowProp
   const likeBack = async () => {
     setBusy(true);
     try {
-      await adapter.likeBack(item.like.id);
+      const match = await adapter.likeBack(item.like.id);
+      onChanged?.();
+      router.push({ pathname: '/match/[id]', params: { id: match.id } });
     } finally {
       setBusy(false);
     }
@@ -37,6 +42,7 @@ export function LikeInboxRow({ item, defaultExpanded = false }: LikeInboxRowProp
     setBusy(true);
     try {
       await adapter.passLike(item.like.id);
+      onChanged?.();
     } finally {
       setBusy(false);
     }
