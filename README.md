@@ -36,7 +36,13 @@ Signed in, **Discover** shows today's batch of up to 10 ranked profiles (voice a
 
 ## Match, chats, and Photo Exchange
 
-**Like back** (or a returned like from Discover) opens the full-screen match moment — prayer hands, blurred avatars, then **Open to view your match**. **Chats** pins Aunt Martha (stub until the next milestone) and lists matches with status pills. Daniel is waiting on her first move (48h window, one 24h extension, or invite his voice intro). Marcus is an open chat with Photo Exchange ready — **Exchange photos** (gold once) / **Not yet**; when both agree, the reveal screen shows silhouette frames together. Text and voice notes work; phone numbers and handles are blocked until exchange. **Close kindly** ends a match with a respectful template.
+**Like back** (or a returned like from Discover) opens the full-screen match moment — prayer hands, blurred avatars, then **Open to view your match**. **Chats** pins Aunt Martha and lists matches with status pills. Daniel is waiting on her first move (48h window, one 24h extension, or invite his voice intro). Marcus is an open chat with Photo Exchange ready — **Exchange photos** (gold once) / **Not yet**; when both agree, the reveal screen shows silhouette frames together. Text and voice notes work; phone numbers and handles are blocked until exchange. **Close kindly** ends a match with a respectful template.
+
+## Front Porch, Plan a date, Aunt Martha
+
+From an open chat menu: **Invite to a voice date** (Front Porch — simulated call, 20‑minute timer, +10 min when both agree, never recorded) and **Plan a date** after Photo Exchange (activity, times, public place search, who pays, calendar .ics, accountability share, day-after check-in on Profile). **Aunt Martha** is a full coach thread with starter chips, weekly free questions, Talent charge after that, and a Share-with-Martha consent step before chat context is included. **Notifications** (bell on Chats) and **Settings** (from Profile) cover prefs, partner, Martha nudges, and Coming soon ad stubs.
+
+Jonathan is seeded with a voice date tomorrow at 7pm — open his chat → Front Porch to start.
 
 ## Try the demo account
 

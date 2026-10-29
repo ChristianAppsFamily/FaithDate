@@ -23,6 +23,7 @@ import { CloseKindlySheet } from './CloseKindlySheet';
 import { ExchangeBanner } from './ExchangeBanner';
 import { FirstMovePanel } from './FirstMovePanel';
 import { MessageList } from './MessageList';
+import { VoiceDateBanner } from './VoiceDateBanner';
 
 /**
  * Designs 08 + 09. Women-first start, open chat with exchange banner, voice notes,
@@ -171,7 +172,7 @@ export function ChatScreen() {
       <ChatHeader
         thread={thread}
         onBack={() => router.back()}
-        onMartha={() => router.push('/aunt-martha')}
+        onMartha={() => router.push({ pathname: '/aunt-martha', params: { context: 'shared_chat', matchId: id ?? '' } })}
         onMenu={() => setMenuOpen(true)}
       />
 
@@ -193,11 +194,12 @@ export function ChatScreen() {
               if (!id) return;
               void adapter.inviteIntro(id).then(() => threadQ.refresh());
             }}
-            onAskMartha={() => router.push('/aunt-martha')}
+            onAskMartha={() => router.push({ pathname: '/aunt-martha', params: { context: 'none', matchId: id ?? '' } })}
             onCloseKindly={() => setCloseOpen(true)}
           />
         ) : (
           <>
+            <VoiceDateBanner thread={thread} />
             <ExchangeBanner
               thread={thread}
               busy={busy}
@@ -210,7 +212,7 @@ export function ChatScreen() {
                 {error}
               </Text>
             ) : null}
-            {me ? <MessageList thread={thread} meId={me.id} /> : null}
+            {me ? <MessageList thread={thread} meId={me.id} onChanged={() => void threadQ.refresh()} /> : null}
           </>
         )}
       </View>
@@ -270,10 +272,36 @@ export function ChatScreen() {
             <Text variant="heading" color="heading">
               Chat options
             </Text>
+            {thread.can_invite_voice_date || thread.next_voice_date ? (
+              <Pressable
+                onPress={() => {
+                  setMenuOpen(false);
+                  router.push({ pathname: '/front-porch/[matchId]', params: { matchId: thread.match.id } });
+                }}
+                style={{ minHeight: 48, justifyContent: 'center' }}
+              >
+                <Text variant="bodyStrong" color="heading">
+                  {thread.next_voice_date ? 'Open Front Porch' : 'Invite to a voice date'}
+                </Text>
+              </Pressable>
+            ) : null}
+            {thread.can_plan_date ? (
+              <Pressable
+                onPress={() => {
+                  setMenuOpen(false);
+                  router.push({ pathname: '/plan-date/[matchId]', params: { matchId: thread.match.id } });
+                }}
+                style={{ minHeight: 48, justifyContent: 'center' }}
+              >
+                <Text variant="bodyStrong" color="heading">
+                  Plan a date
+                </Text>
+              </Pressable>
+            ) : null}
             <Pressable
               onPress={() => {
                 setMenuOpen(false);
-                router.push('/aunt-martha');
+                router.push({ pathname: '/aunt-martha', params: { context: 'shared_chat', matchId: thread.match.id } });
               }}
               style={{ minHeight: 48, justifyContent: 'center' }}
             >

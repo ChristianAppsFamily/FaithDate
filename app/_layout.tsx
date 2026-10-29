@@ -73,7 +73,14 @@ function RootStack() {
         <Stack.Screen name="match/[id]" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
         <Stack.Screen name="chat/[id]" />
         <Stack.Screen name="reveal/[id]" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
+        <Stack.Screen name="front-porch/[matchId]" />
+        <Stack.Screen name="front-porch/call/[voiceDateId]" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
+        <Stack.Screen name="front-porch/feedback/[voiceDateId]" />
+        <Stack.Screen name="plan-date/[matchId]" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="check-in/[planId]" />
         <Stack.Screen name="aunt-martha" />
+        <Stack.Screen name="notifications" />
+        <Stack.Screen name="settings" />
         <Stack.Screen name="wallet" options={{ presentation: 'modal' }} />
         <Stack.Screen name="dev" options={{ presentation: 'modal' }} />
       </Stack>

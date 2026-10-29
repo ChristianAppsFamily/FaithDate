@@ -1,41 +1,41 @@
 import { useRouter } from 'expo-router';
-import { Bug, ChevronRight, LogOut } from 'lucide-react-native';
+import { Bug, ChevronRight, Settings } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { VoicePlayer } from '@/components/media';
 import { Avatar, Card, Chip, Screen, TabHeader, Text, TAB_BAR_HEIGHT } from '@/components/ui';
+import { auntMartha } from '@/config/auntMartha';
 import { currency } from '@/config/currency';
 import { adapter } from '@/data';
 import { useAdapterQuery } from '@/hooks/useAdapterQuery';
-import { useSession } from '@/store/useSession';
-import { MIN_TOUCH_TARGET, useTheme, useThemePreference, type ThemePreference } from '@/theme';
+import { formatDateTime } from '@/lib/time';
+import { MIN_TOUCH_TARGET, useTheme } from '@/theme';
 
-const themeOptions: { id: ThemePreference; label: string }[] = [
-  { id: 'system', label: 'System' },
-  { id: 'light', label: 'Light' },
-  { id: 'dark', label: 'Dark' },
-];
-
-/** Profile tab shell: your card summary, Talents balance, appearance, sign out, and the dev panel in dev builds. */
+/** Profile tab: card summary, wallet, check-ins, Aunt Martha entry, Settings, and the dev panel. */
 export function ProfileScreen() {
   const { colors, spacing } = useTheme();
   const router = useRouter();
-  const { preference, setPreference } = useThemePreference();
-  const applySession = useSession((s) => s.applySession);
   const me = useAdapterQuery(() => adapter.getMyCard());
   const wallet = useAdapterQuery(() => adapter.getWallet());
-
-  const signOut = async () => {
-    await adapter.signOut();
-    applySession({ profile: null, onboarding_complete: false, resume_step: 1 });
-    router.replace('/(onboarding)/welcome');
-  };
-
+  const checkins = useAdapterQuery(() => adapter.getPendingCheckins());
   const card = me.data;
+  const pending = checkins.data ?? [];
 
   return (
     <Screen grouped bottomInset={TAB_BAR_HEIGHT}>
-      <TabHeader title="Profile" />
+      <TabHeader
+        title="Profile"
+        action={
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Open settings"
+            onPress={() => router.push('/settings')}
+            style={{ minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Settings size={22} color={colors.heading} />
+          </Pressable>
+        }
+      />
 
       {card ? (
         <Card>
@@ -78,22 +78,60 @@ export function ProfileScreen() {
         </View>
       </Card>
 
-      <Card style={{ marginTop: spacing.md }}>
-        <Text variant="captionStrong" color="muted">
-          Appearance
-        </Text>
-        <View style={[styles.chips, { marginTop: spacing.sm }]} accessibilityRole="radiogroup">
-          {themeOptions.map((o) => (
-            <Chip key={o.id} variant="choice" label={o.label} selected={preference === o.id} onPress={() => setPreference(o.id)} />
+      {pending.length > 0 ? (
+        <Card style={{ marginTop: spacing.md, gap: spacing.sm }}>
+          <Text variant="captionStrong" color="muted">
+            How did it go?
+          </Text>
+          {pending.map((p) => (
+            <Pressable
+              key={p.id}
+              accessibilityRole="button"
+              accessibilityLabel={`Check in on ${p.place_name}`}
+              onPress={() => router.push({ pathname: '/check-in/[planId]', params: { planId: p.id } })}
+              style={{ minHeight: MIN_TOUCH_TARGET, justifyContent: 'center' }}
+            >
+              <Text variant="bodyStrong" color="heading">
+                {p.place_name}
+              </Text>
+              <Text variant="caption" color="muted">
+                {p.chosen_time ? formatDateTime(p.chosen_time) : 'Confirmed date'} · Tap to check in
+              </Text>
+            </Pressable>
           ))}
+        </Card>
+      ) : null}
+
+      <Card
+        style={{ marginTop: spacing.md }}
+        onPress={() => router.push({ pathname: '/aunt-martha', params: { context: 'profile' } })}
+        accessibilityRole="button"
+        accessibilityLabel={auntMartha.entryPoints.profile}
+      >
+        <View style={styles.row}>
+          <Avatar variant="coach" size={40} name={auntMartha.name} />
+          <View style={{ flex: 1 }}>
+            <Text variant="bodyStrong" color="heading">
+              {auntMartha.entryPoints.profile}
+            </Text>
+            <Text variant="caption" color="muted">
+              {auntMartha.label}
+            </Text>
+          </View>
+          <ChevronRight size={18} color={colors.muted} />
         </View>
       </Card>
 
       <Card padding={0} style={{ marginTop: spacing.md }}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Log out" onPress={signOut} style={({ pressed }) => [styles.listRow, { opacity: pressed ? 0.7 : 1 }]}>
-          <LogOut size={20} color={colors.muted} />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Open settings"
+          onPress={() => router.push('/settings')}
+          style={({ pressed }) => [styles.listRow, { opacity: pressed ? 0.7 : 1 }]}
+        >
+          <Settings size={20} color={colors.muted} />
           <Text variant="bodyStrong" color="heading" style={{ flex: 1 }}>
-            Log out
+            Settings
           </Text>
           <ChevronRight size={18} color={colors.muted} />
         </Pressable>

@@ -1,5 +1,5 @@
-import { AuntMarthaStubScreen } from '@/features/aunt-martha/AuntMarthaStubScreen';
+import { AuntMarthaScreen } from '@/features/aunt-martha/AuntMarthaScreen';
 
 export default function AuntMarthaRoute() {
-  return <AuntMarthaStubScreen />;
+  return <AuntMarthaScreen />;
 }

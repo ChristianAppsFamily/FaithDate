@@ -1,8 +1,8 @@
 import { useRouter } from 'expo-router';
-import { Pin } from 'lucide-react-native';
+import { Bell, Pin } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { Avatar, Card, Chip, Screen, TabHeader, Text, TAB_BAR_HEIGHT } from '@/components/ui';
+import { Avatar, Card, Chip, IconButton, Screen, TabHeader, Text, TAB_BAR_HEIGHT } from '@/components/ui';
 import { auntMartha } from '@/config/auntMartha';
 import { adapter } from '@/data';
 import { useAdapterQuery } from '@/hooks/useAdapterQuery';
@@ -16,12 +16,26 @@ export function ChatsScreen() {
   const { colors, spacing } = useTheme();
   const router = useRouter();
   const matches = useAdapterQuery(() => adapter.getMatches());
+  const notifications = useAdapterQuery(() => adapter.getNotifications());
   const items = matches.data ?? [];
   const count = items.length;
+  const unread = (notifications.data ?? []).filter((n) => !n.read_at).length;
 
   return (
     <Screen grouped bottomInset={TAB_BAR_HEIGHT}>
-      <TabHeader eyebrow={`${count} ${count === 1 ? 'match' : 'matches'}`} title="Chats" />
+      <TabHeader
+        eyebrow={`${count} ${count === 1 ? 'match' : 'matches'}`}
+        title="Chats"
+        action={
+          <IconButton
+            accessibilityLabel={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
+            icon={<Bell size={20} color={unread > 0 ? colors.onPrimary : colors.heading} />}
+            tone={unread > 0 ? 'filled' : 'outline'}
+            size={48}
+            onPress={() => router.push('/notifications')}
+          />
+        }
+      />
 
       <Pressable
         accessibilityRole="button"
