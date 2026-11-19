@@ -5,8 +5,11 @@
   "private": true,
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "ios:prebuild": "expo prebuild --platform ios",
+    "ios:pods": "cd ios && pod install",
+    "ios:xcode": "expo prebuild --platform ios && cd ios && pod install && open FaithDate.xcworkspace",
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",

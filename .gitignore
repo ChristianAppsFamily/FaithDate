@@ -38,6 +38,14 @@ yarn-error.*
 
 example
 
-# generated native folders
-/ios
+# Android native (generate locally with `npx expo prebuild --platform android`)
 /android
+
+# iOS native project is committed for Xcode device testing.
+# Keep CocoaPods / Xcode local junk out of git (workspace is created by pod install):
+/ios/Pods/
+/ios/build/
+/ios/DerivedData/
+/ios/*.xcworkspace/xcuserdata/
+/ios/*.xcodeproj/xcuserdata/
+/ios/*.xcodeproj/project.xcworkspace/xcuserdata/

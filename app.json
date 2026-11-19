@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "bundleIdentifier": "app.faithdate.prototype",
       "supportsTablet": false,
       "infoPlist": {
         "NSMicrophoneUsageDescription": "FaithDate uses your microphone to record your voice intro and voice notes."

@@ -10,7 +10,7 @@ Product behaviour is defined in [`SPEC.md`](./SPEC.md); the visual design lives 
 
 ## Run it
 
-Requirements: Node 20+ and npm. For phones, install the Expo Go app.
+Requirements: Node 20+ and npm. For phones, install the Expo Go app **or** use the Xcode workspace below.
 
 ```bash
 npm install
@@ -25,6 +25,33 @@ npm run typecheck   # tsc --noEmit (strict, no `any`)
 npm run lint        # expo lint
 npm test            # jest: mock adapter rules
 ```
+
+## Run on a physical iPhone (Xcode)
+
+The native iOS project lives in [`ios/`](./ios) (bundle id `app.faithdate.prototype`). CocoaPods must be installed on your Mac; this VM cannot run `pod install`.
+
+On your Mac:
+
+```bash
+git pull
+npm install
+cd ios
+pod install          # creates FaithDate.xcworkspace
+open FaithDate.xcworkspace
+```
+
+Or from the repo root: `npm run ios:xcode` (prebuild + pods + opens Xcode).
+
+In Xcode:
+
+1. Select the **FaithDate** target → **Signing & Capabilities** → choose your Team (Personal Team is fine for your own phone).
+2. Plug in your iPhone, trust the computer, and select it as the run destination.
+3. Press Run (▶). The first install may ask you to trust the developer certificate under **Settings → General → VPN & Device Management** on the phone.
+4. Keep Metro running for JS reload: in another terminal from the repo root, `npx expo start`.
+
+If the `ios/` folder is missing or out of date after config changes: `npm run ios:prebuild`, then `pod install` again.
+
+Microphone permission is already declared for voice intros and chat voice notes.
 
 ## Onboarding
 
